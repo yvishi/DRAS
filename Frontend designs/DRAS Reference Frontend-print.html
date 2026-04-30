@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DRAS — Reference Frontend (Print)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  html, body { margin: 0; padding: 0; background: #f0eee9; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: "IBM Plex Sans", system-ui, sans-serif; }
+
+  .page {
+    width: 100%;
+    margin: 0 auto;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+    break-after: page;
+  }
+  .page:last-child { page-break-after: auto; break-after: auto; }
+
+  .page-screen {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-meta {
+    padding: 8px 16px;
+    background: #fafbfc;
+    border-bottom: 1px solid #e2e5ea;
+    display: flex;
+    justify-content: space-between;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    color: #5a6270;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .page-meta .label { color: #1a1d23; font-weight: 600; }
+
+  .page-wrap {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  /* Each "page" sized for landscape A4 print proportionally */
+  @page { size: A4 landscape; margin: 0; }
+
+  @media print {
+    body { background: white; }
+    .page-wrap { padding: 0; gap: 0; }
+    .page { box-shadow: none; margin: 0; }
+  }
+
+  /* The artboard itself stays at native pixels but gets scaled via transform to fit page */
+  .artboard-shell {
+    position: relative;
+    overflow: hidden;
+    background: white;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="chrome.jsx"></script>
+<script type="text/babel" src="screens/landing.jsx"></script>
+<script type="text/babel" src="screens/login.jsx"></script>
+<script type="text/babel" src="screens/admin.jsx"></script>
+<script type="text/babel" src="screens/camp.jsx"></script>
+<script type="text/babel" src="screens/warehouse.jsx"></script>
+
+<script type="text/babel">
+function ArtboardPage({ label, sub, w, h, theme = "light", children }) {
+  // Target A4 landscape at ~96dpi: 1123 × 794. We scale artboard to fit width.
+  const targetW = 1100;
+  const scale = targetW / w;
+  const scaledH = h * scale;
+  return (
+    <div className="page">
+      <div className="page-meta">
+        <span className="label">{label}</span>
+        <span>{sub}</span>
+      </div>
+      <div className="page-wrap">
+        <div className="artboard-shell" style={{width: targetW, height: scaledH}}>
+          <div data-theme={theme} style={{
+            width: w, height: h,
+            transform: `scale(${scale})`,
+            transformOrigin: "top left",
+          }}>
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PrintApp() {
+  return (
+    <>
+      <ArtboardPage label="01 · Landing page" sub="DRAS — Public surface" w={1280} h={900}>
+        <LandingPage />
+      </ArtboardPage>
+      <ArtboardPage label="02 · Login" sub="DRAS — Public surface" w={1280} h={820}>
+        <LoginPage />
+      </ArtboardPage>
+      <ArtboardPage label="03 · Control Admin · national overview" sub="Role-based dashboards" w={1440} h={960}>
+        <AdminDashboard />
+      </ArtboardPage>
+      <ArtboardPage label="04 · Camp Officer · raise & track requests" sub="Role-based dashboards" w={1440} h={960}>
+        <CampDashboard />
+      </ArtboardPage>
+      <ArtboardPage label="05 · Warehouse Manager · inventory & dispatch" sub="Role-based dashboards" w={1440} h={960}>
+        <WarehouseDashboard />
+      </ArtboardPage>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<PrintApp />);
+
+// auto-print: wait for fonts + babel transforms + render
+(async () => {
+  try { await document.fonts.ready; } catch (e) {}
+  setTimeout(() => { window.print(); }, 800);
+})();
+</script>
+</body>
+</html>
