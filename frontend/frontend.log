@@ -1,0 +1,21 @@
+
+> dras-frontend@1.0.0 dev
+> vite
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m311[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m12:52:46 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m12:52:55 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/screens/Landing.jsx[22m
+[2m12:53:00 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/screens/Landing.jsx[22m
+[2m12:53:11 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/screens/Login.jsx[22m
+[2m12:53:20 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/TopBar.jsx[22m
+[2m12:54:50 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/screens/Admin.jsx[22m
+[2m12:56:06 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/screens/Camp.jsx[22m
+[2m12:56:17 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/screens/Warehouse.jsx[22m
+[2m12:56:21 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/screens/Warehouse.jsx[22m
+[2m12:56:28 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/screens/Warehouse.jsx[22m
+[2m12:56:38 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/screens/Warehouse.jsx[22m
