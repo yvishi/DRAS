@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DRAS – Project Report</title>
+<style>
+  /* ── Fonts ── */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:      #0f1117;
+    --ink2:     #374151;
+    --ink3:     #6b7280;
+    --ink4:     #9ca3af;
+    --line:     #e5e7eb;
+    --line2:    #d1d5db;
+    --bg:       #f9fafb;
+    --surface:  #ffffff;
+    --accent:   #2563eb;
+    --accent-b: #1d4ed8;
+    --green:    #16a34a;
+    --amber:    #b45309;
+    --red:      #dc2626;
+    --purple:   #7c3aed;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink);
+    background: var(--bg);
+    padding: 0 0 80px;
+  }
+
+  /* ── Cover page ── */
+  .cover {
+    background: var(--ink);
+    color: #fff;
+    padding: 72px 80px 64px;
+    page-break-after: always;
+  }
+  .cover-tag {
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin-bottom: 28px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .cover h1 {
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .cover-sub {
+    font-size: 18px;
+    color: #9ca3af;
+    margin-bottom: 48px;
+    font-weight: 400;
+  }
+  .cover-meta {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid #374151;
+    padding-top: 32px;
+    margin-top: 48px;
+  }
+  .cover-meta-item { padding-right: 24px; }
+  .cover-meta-label { font-size: 10px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; }
+  .cover-meta-value { font-size: 14px; font-weight: 500; color: #e5e7eb; }
+
+  /* ── Main wrapper ── */
+  .doc { max-width: 900px; margin: 0 auto; padding: 0 40px; }
+
+  /* ── Section ── */
+  .section { margin: 56px 0 0; }
+  .section-label {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  h2 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+  }
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 28px 0 10px;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink2);
+    margin: 18px 0 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  p { margin-bottom: 10px; color: var(--ink2); }
+  ul { padding-left: 20px; margin-bottom: 10px; color: var(--ink2); }
+  ul li { margin-bottom: 4px; }
+
+  /* ── Info boxes ── */
+  .box {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 20px;
+    background: var(--surface);
+    margin: 12px 0;
+  }
+  .box.accent { border-color: #bfdbfe; background: #eff6ff; }
+  .box.green  { border-color: #bbf7d0; background: #f0fdf4; }
+  .box.amber  { border-color: #fde68a; background: #fffbeb; }
+
+  /* ── Flow diagram ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .flow-step {
+    background: var(--surface);
+    border: 1.5px solid var(--line2);
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    min-width: 130px;
+  }
+  .flow-step .role { font-size: 10px; color: var(--ink3); font-weight: 400; margin-bottom: 3px; font-family: 'JetBrains Mono', monospace; }
+  .flow-step .action { font-size: 10px; color: var(--accent); font-weight: 500; margin-top: 3px; font-family: 'JetBrains Mono', monospace; }
+  .flow-arrow { font-size: 18px; color: var(--ink4); padding: 0 8px; }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    margin: 12px 0 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  thead tr { background: var(--ink); color: #fff; }
+  thead th {
+    padding: 9px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  tbody tr:nth-child(even) { background: #f9fafb; }
+  tbody tr:hover { background: #eff6ff; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td:last-child, th:last-child { border-right: none; }
+
+  .col-name  { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; color: var(--ink); white-space: nowrap; }
+  .col-type  { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--purple); }
+  .col-const { font-size: 11.5px; color: var(--ink2); }
+  .tag {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    margin-right: 3px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+  }
+  .tag.pk  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+  .tag.fk  { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+  .tag.uq  { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
+  .tag.nn  { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+  .tag.chk { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+  .tag.def { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+  .tag.ai  { background: #e0f2fe; color: #075985; border: 1px solid #bae6fd; }
+
+  /* ── Code blocks ── */
+  pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 16px 20px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    overflow-x: auto;
+    margin: 10px 0 16px;
+  }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: #f1f5f9;
+    border: 1px solid var(--line2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--purple);
+  }
+  .kw   { color: #7dd3fc; }
+  .fn   { color: #fbbf24; }
+  .str  { color: #86efac; }
+  .cmt  { color: #64748b; font-style: italic; }
+  .num  { color: #fb923c; }
+
+  /* ── API endpoint table ── */
+  .method {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.03em;
+  }
+  .method.get  { background: #d1fae5; color: #065f46; }
+  .method.post { background: #dbeafe; color: #1e40af; }
+
+  /* ── Arch grid ── */
+  .arch-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .arch-card {
+    border: 1.5px solid var(--line2);
+    border-radius: 8px;
+    padding: 16px;
+    background: var(--surface);
+  }
+  .arch-card h4 { margin: 0 0 10px; font-size: 12px; }
+  .arch-card ul { font-size: 12px; padding-left: 16px; }
+  .arch-card li { margin-bottom: 3px; }
+
+  /* ── Table of contents ── */
+  .toc { column-count: 2; column-gap: 40px; margin: 16px 0; }
+  .toc-item { break-inside: avoid; display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dotted var(--line2); font-size: 13px; margin-bottom: 4px; color: var(--ink2); }
+  .toc-num { color: var(--ink3); font-size: 12px; }
+
+  /* ── Print ── */
+  @media print {
+    body { background: #fff; }
+    .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    thead tr { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .tag { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .method { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    pre { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    h2 { page-break-before: always; }
+    h2:first-of-type { page-break-before: avoid; }
+    table { page-break-inside: avoid; }
+  }
+
+  /* ── Horizontal rule ── */
+  hr { border: none; border-top: 1px solid var(--line); margin: 32px 0; }
+
+  /* ── Print button ── */
+  .print-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    z-index: 99;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+  }
+  .print-btn:hover { background: var(--accent-b); }
+  @media print { .print-btn { display: none; } }
+</style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">⬇ Save as PDF</button>
+
+<!-- ══════════════════════════════════ COVER ══════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-tag">B.Tech Computer Science &nbsp;·&nbsp; Semester 4 &nbsp;·&nbsp; DBMS Mini-Project &nbsp;·&nbsp; Spring 2026</div>
+  <h1>DRAS</h1>
+  <div class="cover-sub">Disaster Resource Allocation System — Project Report</div>
+  <p style="color:#9ca3af;max-width:600px;font-size:14px;line-height:1.6">
+    A coordinated supply-chain platform for disaster relief that connects control centers,
+    relief camps, and warehouses through a single requesting, approval, and dispatch
+    pipeline — built on MySQL 8 with full ACID guarantees, role-based access control,
+    and a stored-procedure-only mutation surface.
+  </p>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Database</div>
+      <div class="cover-meta-value">MySQL 8.0+</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Backend</div>
+      <div class="cover-meta-value">Node.js + Express</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Frontend</div>
+      <div class="cover-meta-value">React 18 + Vite</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Tables</div>
+      <div class="cover-meta-value">13 &nbsp;·&nbsp; Procedures: 4</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ DOCUMENT ══════════════════════════════ -->
+<div class="doc">
+
+  <!-- Table of Contents -->
+  <div class="section">
+    <div class="section-label">Contents</div>
+    <h2>Table of Contents</h2>
+    <div class="toc">
+      <div class="toc-item"><span>1. Project Overview</span><span class="toc-num">§1</span></div>
+      <div class="toc-item"><span>2. System Architecture</span><span class="toc-num">§2</span></div>
+      <div class="toc-item"><span>3. How a Request Works</span><span class="toc-num">§3</span></div>
+      <div class="toc-item"><span>4. Database Schema</span><span class="toc-num">§4</span></div>
+      <div class="toc-item"><span>5. Stored Procedures</span><span class="toc-num">§5</span></div>
+      <div class="toc-item"><span>6. Triggers</span><span class="toc-num">§6</span></div>
+      <div class="toc-item"><span>7. SQL Functions</span><span class="toc-num">§7</span></div>
+      <div class="toc-item"><span>8. Views</span><span class="toc-num">§8</span></div>
+      <div class="toc-item"><span>9. Role-Based Access Control</span><span class="toc-num">§9</span></div>
+      <div class="toc-item"><span>10. Backend API</span><span class="toc-num">§10</span></div>
+      <div class="toc-item"><span>11. Frontend</span><span class="toc-num">§11</span></div>
+      <div class="toc-item"><span>12. ACID &amp; Concurrency</span><span class="toc-num">§12</span></div>
+      <div class="toc-item"><span>13. Entity-Relationship Diagram</span><span class="toc-num">§13</span></div>
+      <div class="toc-item"><span>14. Normalization Analysis</span><span class="toc-num">§14</span></div>
+      <div class="toc-item"><span>15. Performance Indexes</span><span class="toc-num">§15</span></div>
+      <div class="toc-item"><span>16. Seed Data &amp; Demo Dataset</span><span class="toc-num">§16</span></div>
+      <div class="toc-item"><span>17. Test Cases &amp; Validation</span><span class="toc-num">§17</span></div>
+      <div class="toc-item"><span>18. Conclusion</span><span class="toc-num">§18</span></div>
+    </div>
+  </div>
+
+  <!-- ── §1 Overview ── -->
+  <div class="section">
+    <div class="section-label">§ 1</div>
+    <h2>Project Overview</h2>
+    <p>
+      DRAS (Disaster Resource Allocation System) is a full-stack web application that manages the
+      supply chain of essential resources — food, water, medicine, shelter materials — during
+      disaster events. It models the real-world workflow where a <strong>relief camp</strong>
+      requests supplies, a <strong>control center admin</strong> approves them, and a
+      <strong>warehouse manager</strong> dispatches them from stock.
+    </p>
+    <p>
+      The entire system is backed by a MySQL 8 relational database with carefully defined
+      constraints, stored procedures for every state change, triggers for automation, and
+      role-based MySQL users that enforce access control at the database level — not just
+      the application level.
+    </p>
+
+    <h3>Key Goals</h3>
+    <ul>
+      <li>Prevent double-spending of limited relief stock using <strong>ACID transactions</strong> with row-level locking.</li>
+      <li>Enforce a strict workflow — resources can only move through defined states (Pending → Approved → Dispatched → Delivered).</li>
+      <li>Log every state change automatically via database triggers so there is always a full audit trail.</li>
+      <li>Alert warehouse managers automatically the moment stock drops below a safe minimum threshold.</li>
+      <li>Restrict what each user role can do — warehouse managers cannot approve requests; camp officers cannot modify inventory.</li>
+    </ul>
+
+    <div class="box accent">
+      <strong>Why stored procedures?</strong> &nbsp;Every mutation (approve, dispatch, confirm, restock) is wrapped
+      in a stored procedure rather than a direct SQL statement from the application. This means
+      triggers always fire, audit logs always record, and no application bug can leave the data
+      in an inconsistent state.
+    </div>
+  </div>
+
+  <!-- ── §2 Architecture ── -->
+  <div class="section">
+    <div class="section-label">§ 2</div>
+    <h2>System Architecture</h2>
+    <p>
+      The system is split into three layers that communicate in a clean, one-direction flow.
+      The browser never talks directly to MySQL — all data access goes through the Express API.
+    </p>
+
+    <div class="arch-grid">
+      <div class="arch-card">
+        <h4>① Frontend (React)</h4>
+        <ul>
+          <li>React 18, runs on port 5173</li>
+          <li>Built with Vite</li>
+          <li>Three dashboards: Admin, Camp Officer, Warehouse Manager</li>
+          <li>All data fetched via <code>/api/…</code> endpoints</li>
+          <li>No direct database access</li>
+        </ul>
+      </div>
+      <div class="arch-card">
+        <h4>② Backend (Express)</h4>
+        <ul>
+          <li>Node.js + Express 4, port 3001</li>
+          <li>All <code>/api/…</code> routes in <code>server.js</code></li>
+          <li>Uses <code>mysql2</code> for connection pooling</li>
+          <li>Mutations call stored procedures</li>
+          <li>Returns JSON responses</li>
+        </ul>
+      </div>
+      <div class="arch-card">
+        <h4>③ Database (MySQL)</h4>
+        <ul>
+          <li>MySQL 8.0+, database name: DRAS</li>
+          <li>13 tables, fully normalized (BCNF)</li>
+          <li>4 stored procedures</li>
+          <li>4 triggers, 6 views, 3 SQL functions</li>
+          <li>3 MySQL application users (RBAC)</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Data Flow</h3>
+    <p>
+      The browser sends an HTTP request (e.g. <code>POST /api/requests/5/approve</code>).
+      Express receives it, validates the input, then calls the appropriate MySQL stored
+      procedure (<code>CALL sp_Approve_Request(5)</code>). The procedure runs inside a
+      transaction, updates the tables, fires any relevant triggers, and either commits or
+      rolls back. Express returns the result as JSON to the browser.
+    </p>
+    <pre><span class="cmt">Browser  →  POST /api/requests/5/approve
+Express  →  CALL sp_Approve_Request(5)
+MySQL    →  BEGIN TRANSACTION
+         →  SELECT … FOR UPDATE   (lock the row)
+         →  CHECK stock availability
+         →  UPDATE Request SET Status = 'Approved'
+         →  TRIGGER fires → INSERT INTO Audit_Log
+         →  COMMIT
+Express  →  { "message": "Approved" }
+Browser  →  UI refreshes</span></pre>
+  </div>
+
+  <!-- ── §3 How a request works ── -->
+  <div class="section">
+    <div class="section-label">§ 3</div>
+    <h2>How a Request Works — End to End</h2>
+    <p>
+      A resource request goes through exactly four steps, each performed by a different role.
+      No step can be skipped — the stored procedures enforce the valid state transitions.
+    </p>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="role">Camp Officer</div>
+        <strong>1. Raise Request</strong>
+        <div class="action">INSERT → Request + Request_Details</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="role">Control Admin</div>
+        <strong>2. Approve</strong>
+        <div class="action">sp_Approve_Request(req_id)</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="role">Warehouse Mgr</div>
+        <strong>3. Dispatch</strong>
+        <div class="action">sp_Dispatch_Request(req_id, w_id)</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="role">Camp Officer</div>
+        <strong>4. Confirm</strong>
+        <div class="action">sp_Confirm_Delivery(dispatch_id)</div>
+      </div>
+    </div>
+
+    <h3>Step-by-step detail</h3>
+    <table>
+      <thead><tr><th>#</th><th>Who</th><th>What happens</th><th>Tables affected</th><th>Final status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Camp Officer</td>
+          <td>Fills a form — chooses resources and quantities, sets priority (Low / Medium / High / Urgent). The app inserts one row into <code>Request</code> and one row per item into <code>Request_Details</code>.</td>
+          <td><code>Request</code>, <code>Request_Details</code></td>
+          <td><strong>Pending</strong></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Control Admin</td>
+          <td>Reviews the request on the dashboard. Clicks Approve. The procedure checks if there is enough combined stock across all warehouses. If yes, it sets <code>Approved_Qty = Requested_Qty</code> for every line item and marks the request Approved. The audit trigger fires automatically.</td>
+          <td><code>Request</code>, <code>Request_Details</code>, <code>Audit_Log</code></td>
+          <td><strong>Approved</strong></td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Warehouse Mgr</td>
+          <td>Sees the approved request in their queue. Clicks Dispatch. The procedure verifies that <em>this specific warehouse</em> has enough stock, deducts the quantities from <code>Warehouse_Inventory</code>, and creates a row in <code>Dispatch_Log</code> with an estimated arrival time. The inventory trigger fires and may create a <code>Stock_Alert</code> if stock drops below minimum.</td>
+          <td><code>Request</code>, <code>Warehouse_Inventory</code>, <code>Dispatch_Log</code>, possibly <code>Stock_Alert</code>, <code>Audit_Log</code></td>
+          <td><strong>Dispatched</strong></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Camp Officer</td>
+          <td>When supplies arrive, clicks Confirm. The procedure records the actual arrival time in <code>Delivery_Status</code>, marks the <code>Dispatch_Log</code> entry as Delivered, and sets the <code>Request</code> to Delivered.</td>
+          <td><code>Dispatch_Log</code>, <code>Delivery_Status</code>, <code>Request</code>, <code>Audit_Log</code></td>
+          <td><strong>Delivered</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── §4 Schema ── -->
+  <div class="section">
+    <div class="section-label">§ 4</div>
+    <h2>Database Schema</h2>
+    <p>
+      The database contains <strong>13 tables</strong> organized into five tiers based on
+      dependency. Tables in Tier 1 have no foreign keys. Each subsequent tier depends on the
+      one above it.
+    </p>
+
+    <div class="box">
+      <strong>Constraint legend: &nbsp;</strong>
+      <span class="tag pk">PK</span> Primary Key &nbsp;
+      <span class="tag ai">AI</span> Auto Increment &nbsp;
+      <span class="tag nn">NOT NULL</span> &nbsp;
+      <span class="tag uq">UNIQUE</span> &nbsp;
+      <span class="tag fk">FK</span> Foreign Key &nbsp;
+      <span class="tag chk">CHECK</span> &nbsp;
+      <span class="tag def">DEFAULT</span>
+    </div>
+
+    <!-- Control_Center -->
+    <h3>1. Control_Center</h3>
+    <p>Represents a regional disaster management authority. Every request is linked to the control center that manages it.</p>
+    <table>
+      <thead><tr><th>Column</th><th>Data Type</th><th>Constraints</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">CC_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag pk">PK</span><span class="tag ai">AI</span></td><td>Unique identifier for the control center</td></tr>
+        <tr><td class="col-name">Name</td><td class="col-type">VARCHAR(100)</td><td class="col-const"><span class="tag nn">NOT NULL</span></td><td>Name of the control center</td></tr>
+        <tr><td class="col-name">Location</td><td class="col-type">VARCHAR(255)</td><td class="col-const"><span class="tag nn">NOT NULL</span></td><td>Physical location</td></tr>
+        <tr><td class="col-name">Contact</td><td class="col-type">VARCHAR(50)</td><td class="col-const">—</td><td>Contact phone/email (optional)</td></tr>
+        <tr><td class="col-name">Created_At</td><td class="col-type">TIMESTAMP</td><td class="col-const"><span class="tag def">DEFAULT CURRENT_TIMESTAMP</span></td><td>Record creation time</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Disaster_Event -->
+    <h3>2. Disaster_Event</h3>
+    <p>Stores each disaster event (flood, earthquake, cyclone, etc.) with its severity level and lifecycle status.</p>
+    <table>
+      <thead><tr><th>Column</th><th>Data Type</th><th>Constraints</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">Event_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag pk">PK</span><span class="tag ai">AI</span></td><td>Unique identifier for the event</td></tr>
+        <tr><td class="col-name">Name</td><td class="col-type">VARCHAR(100)</td><td class="col-const"><span class="tag nn">NOT NULL</span></td><td>Name/title of the event</td></tr>
+        <tr><td class="col-name">Location</td><td class="col-type">VARCHAR(255)</td><td class="col-const"><span class="tag nn">NOT NULL</span></td><td>Affected area/region</td></tr>
+        <tr><td class="col-name">Level</td><td class="col-type">ENUM</td><td class="col-const"><span class="tag nn">NOT NULL</span></td><td>Severity: <code>'Low'</code>, <code>'Medium'</code>, <code>'High'</code>, <code>'Critical'</code></td></tr>
+        <tr><td class="col-name">Status</td><td class="col-type">ENUM</td><td class="col-const"><span class="tag def">DEFAULT 'Active'</span></td><td>Lifecycle: <code>'Active'</code>, <code>'Monitoring'</code>, <code>'Resolved'</code></td></tr>
+        <tr><td class="col-name">Start_Date</td><td class="col-type">DATETIME</td><td class="col-const"><span class="tag nn">NOT NULL</span></td><td>When the event started</td></tr>
+        <tr><td class="col-name">End_Date</td><td class="col-type">DATETIME</td><td class="col-const">—</td><td>When the event ended (NULL if ongoing)</td></tr>
+        <tr><td class="col-name">Created_At</td><td class="col-type">TIMESTAMP</td><td class="col-const"><span class="tag def">DEFAULT CURRENT_TIMESTAMP</span></td><td>Record creation time</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Resource -->
+    <h3>3. Resource</h3>
+    <p>Master catalogue of all resource types the system tracks — food, water, medicine, shelter kits, etc.</p>
+    <table>
+      <thead><tr><th>Column</th><th>Data Type</th><th>Constraints</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">Res_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag pk">PK</span><span class="tag ai">AI</span></td><td>Unique identifier</td></tr>
+        <tr><td class="col-name">Name</td><td class="col-type">VARCHAR(100)</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag uq">UNIQUE</span></td><td>Resource name — must be unique across the system</td></tr>
+        <tr><td class="col-name">Type</td><td class="col-type">VARCHAR(50)</td><td class="col-const"><span class="tag nn">NOT NULL</span></td><td>Category: Food, Medical, Shelter, etc.</td></tr>
+        <tr><td class="col-name">Unit</td><td class="col-type">VARCHAR(20)</td><td class="col-const"><span class="tag nn">NOT NULL</span></td><td>Unit of measurement: kg, L, units, boxes</td></tr>
+        <tr><td class="col-name">Created_At</td><td class="col-type">TIMESTAMP</td><td class="col-const"><span class="tag def">DEFAULT CURRENT_TIMESTAMP</span></td><td>Record creation time</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Warehouse -->
+    <h3>4. Warehouse</h3>
+    <p>Physical storage facilities that hold and dispatch relief resources.</p>
+    <table>
+      <thead><tr><th>Column</th><th>Data Type</th><th>Constraints</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">W_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag pk">PK</span><span class="tag ai">AI</span></td><td>Unique identifier</td></tr>
+        <tr><td class="col-name">Name</td><td class="col-type">VARCHAR(100)</td><td class="col-const"><span class="tag nn">NOT NULL</span></td><td>Name of the warehouse</td></tr>
+        <tr><td class="col-name">Location</td><td class="col-type">VARCHAR(255)</td><td class="col-const"><span class="tag nn">NOT NULL</span></td><td>Physical address/region</td></tr>
+        <tr><td class="col-name">Capacity_m3</td><td class="col-type">DECIMAL(10,2)</td><td class="col-const">—</td><td>Storage capacity in cubic metres (optional)</td></tr>
+        <tr><td class="col-name">Contact</td><td class="col-type">VARCHAR(50)</td><td class="col-const">—</td><td>Contact number/email (optional)</td></tr>
+        <tr><td class="col-name">Created_At</td><td class="col-type">TIMESTAMP</td><td class="col-const"><span class="tag def">DEFAULT CURRENT_TIMESTAMP</span></td><td>Record creation time</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Relief_Camp -->
+    <h3>5. Relief_Camp</h3>
+    <p>A temporary shelter/camp set up in response to a specific disaster event. Each camp belongs to exactly one event.</p>
+    <table>
+      <thead><tr><th>Column</th><th>Data Type</th><th>Constraints</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">Camp_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag pk">PK</span><span class="tag ai">AI</span></td><td>Unique identifier</td></tr>
+        <tr><td class="col-name">Event_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag fk">FK → Disaster_Event</span></td><td>The event this camp serves. ON DELETE RESTRICT, ON UPDATE CASCADE</td></tr>
+        <tr><td class="col-name">Name</td><td class="col-type">VARCHAR(100)</td><td class="col-const"><span class="tag nn">NOT NULL</span></td><td>Name of the camp</td></tr>
+        <tr><td class="col-name">Location</td><td class="col-type">VARCHAR(255)</td><td class="col-const"><span class="tag nn">NOT NULL</span></td><td>Physical location of the camp</td></tr>
+        <tr><td class="col-name">Current_Occupancy</td><td class="col-type">INT</td><td class="col-const"><span class="tag def">DEFAULT 0</span></td><td>Current number of people in the camp</td></tr>
+        <tr><td class="col-name">Max_Capacity</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span></td><td>Maximum people the camp can hold</td></tr>
+        <tr><td class="col-name">Created_At</td><td class="col-type">TIMESTAMP</td><td class="col-const"><span class="tag def">DEFAULT CURRENT_TIMESTAMP</span></td><td>Record creation time</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Warehouse_Inventory -->
+    <h3>6. Warehouse_Inventory</h3>
+    <p>
+      Tracks how much of each resource is currently in each warehouse. This is the most
+      critical table — its <code>Quantity</code> column is what the approval and dispatch
+      procedures check and modify.
+    </p>
+    <table>
+      <thead><tr><th>Column</th><th>Data Type</th><th>Constraints</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">Inv_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag pk">PK</span><span class="tag ai">AI</span></td><td>Unique identifier</td></tr>
+        <tr><td class="col-name">W_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag fk">FK → Warehouse</span></td><td>Which warehouse. ON DELETE RESTRICT, ON UPDATE CASCADE</td></tr>
+        <tr><td class="col-name">Res_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag fk">FK → Resource</span></td><td>Which resource. ON DELETE RESTRICT, ON UPDATE CASCADE</td></tr>
+        <tr><td class="col-name">Quantity</td><td class="col-type">INT</td><td class="col-const"><span class="tag def">DEFAULT 0</span><span class="tag chk">CHECK (≥ 0)</span></td><td>Current stock quantity — cannot go negative</td></tr>
+        <tr><td class="col-name">Min_Threshold</td><td class="col-type">INT</td><td class="col-const"><span class="tag def">DEFAULT 10</span></td><td>Alert fires when Quantity drops below this</td></tr>
+        <tr><td class="col-name">Last_Updated</td><td class="col-type">TIMESTAMP</td><td class="col-const"><span class="tag def">DEFAULT CURRENT_TIMESTAMP</span></td><td>Auto-updates on every row change</td></tr>
+        <tr><td class="col-name">(W_ID, Res_ID)</td><td class="col-type">—</td><td class="col-const"><span class="tag uq">UNIQUE (uq_inv_w_res)</span></td><td>A warehouse can only have one row per resource type</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Request -->
+    <h3>7. Request</h3>
+    <p>The central transaction table. Every relief request starts here and moves through a defined set of statuses.</p>
+    <table>
+      <thead><tr><th>Column</th><th>Data Type</th><th>Constraints</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">Req_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag pk">PK</span><span class="tag ai">AI</span></td><td>Unique identifier</td></tr>
+        <tr><td class="col-name">CC_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag fk">FK → Control_Center</span></td><td>Which control center manages this request. ON UPDATE CASCADE</td></tr>
+        <tr><td class="col-name">Camp_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag fk">FK → Relief_Camp</span></td><td>The camp that raised the request. ON UPDATE CASCADE</td></tr>
+        <tr><td class="col-name">Priority</td><td class="col-type">ENUM</td><td class="col-const"><span class="tag def">DEFAULT 'Medium'</span></td><td>Urgency: <code>'Low'</code>, <code>'Medium'</code>, <code>'High'</code>, <code>'Urgent'</code></td></tr>
+        <tr><td class="col-name">Status</td><td class="col-type">ENUM</td><td class="col-const"><span class="tag def">DEFAULT 'Pending'</span></td><td><code>'Pending'</code> → <code>'Approved'</code> → <code>'Dispatched'</code> → <code>'Delivered'</code>. Also <code>'Partially_Dispatched'</code>, <code>'Cancelled'</code></td></tr>
+        <tr><td class="col-name">Request_Time</td><td class="col-type">TIMESTAMP</td><td class="col-const"><span class="tag def">DEFAULT CURRENT_TIMESTAMP</span></td><td>When the request was created</td></tr>
+        <tr><td class="col-name">Last_Status_Update</td><td class="col-type">TIMESTAMP</td><td class="col-const"><span class="tag def">ON UPDATE CURRENT_TIMESTAMP</span></td><td>Auto-updates when any column changes</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Request_Details -->
+    <h3>8. Request_Details</h3>
+    <p>
+      Line items for each request — one row per resource type. Stores both what was
+      <em>requested</em> and what was <em>approved</em> (which may differ).
+    </p>
+    <table>
+      <thead><tr><th>Column</th><th>Data Type</th><th>Constraints</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">Req_Detail_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag pk">PK</span><span class="tag ai">AI</span></td><td>Unique identifier</td></tr>
+        <tr><td class="col-name">Req_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag fk">FK → Request</span></td><td>Parent request. ON DELETE CASCADE — details deleted when request is deleted</td></tr>
+        <tr><td class="col-name">Res_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag fk">FK → Resource</span></td><td>Which resource. ON DELETE RESTRICT</td></tr>
+        <tr><td class="col-name">Requested_Qty</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag chk">CHECK (> 0)</span></td><td>Amount the camp asked for — must be at least 1</td></tr>
+        <tr><td class="col-name">Approved_Qty</td><td class="col-type">INT</td><td class="col-const"><span class="tag def">DEFAULT 0</span><span class="tag chk">CHECK (0 ≤ value ≤ Requested_Qty)</span></td><td>Amount actually approved — cannot exceed what was requested</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Dispatch_Log -->
+    <h3>9. Dispatch_Log</h3>
+    <p>Records each shipment — when it left, which warehouse it came from, and when it is expected to arrive.</p>
+    <table>
+      <thead><tr><th>Column</th><th>Data Type</th><th>Constraints</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">Dispatch_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag pk">PK</span><span class="tag ai">AI</span></td><td>Unique identifier</td></tr>
+        <tr><td class="col-name">Req_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag fk">FK → Request</span><span class="tag uq">UNIQUE</span></td><td>One dispatch per request. ON DELETE RESTRICT</td></tr>
+        <tr><td class="col-name">W_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag fk">FK → Warehouse</span></td><td>The warehouse that dispatched. ON DELETE RESTRICT</td></tr>
+        <tr><td class="col-name">Dispatch_Time</td><td class="col-type">TIMESTAMP</td><td class="col-const"><span class="tag def">DEFAULT CURRENT_TIMESTAMP</span></td><td>Exact time goods left the warehouse</td></tr>
+        <tr><td class="col-name">Estimated_Arrival</td><td class="col-type">DATETIME</td><td class="col-const">—</td><td>Calculated ETA by the <code>fn_Calculate_ETA</code> function</td></tr>
+        <tr><td class="col-name">Status</td><td class="col-type">ENUM</td><td class="col-const"><span class="tag def">DEFAULT 'Packed'</span></td><td><code>'Packed'</code>, <code>'In_Transit'</code>, <code>'Delivered'</code>, <code>'Delayed'</code></td></tr>
+      </tbody>
+    </table>
+
+    <!-- Restock_Log -->
+    <h3>10. Restock_Log</h3>
+    <p>Every time a warehouse manager adds stock, a permanent record is kept here for auditability.</p>
+    <table>
+      <thead><tr><th>Column</th><th>Data Type</th><th>Constraints</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">Restock_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag pk">PK</span><span class="tag ai">AI</span></td><td>Unique identifier</td></tr>
+        <tr><td class="col-name">W_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag fk">FK → Warehouse</span></td><td>Which warehouse was restocked. ON DELETE CASCADE</td></tr>
+        <tr><td class="col-name">Res_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag fk">FK → Resource</span></td><td>Which resource. ON DELETE RESTRICT</td></tr>
+        <tr><td class="col-name">Quantity</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag chk">CHECK (> 0)</span></td><td>Amount added — must be positive</td></tr>
+        <tr><td class="col-name">Restock_Date</td><td class="col-type">TIMESTAMP</td><td class="col-const"><span class="tag def">DEFAULT CURRENT_TIMESTAMP</span></td><td>When the restock happened</td></tr>
+        <tr><td class="col-name">Supplier</td><td class="col-type">VARCHAR(100)</td><td class="col-const">—</td><td>Supplier name (optional)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Delivery_Status -->
+    <h3>11. Delivery_Status</h3>
+    <p>Records the outcome of a delivery — who received it, when, and whether goods arrived in acceptable condition.</p>
+    <table>
+      <thead><tr><th>Column</th><th>Data Type</th><th>Constraints</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">Delivery_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag pk">PK</span><span class="tag ai">AI</span></td><td>Unique identifier</td></tr>
+        <tr><td class="col-name">Dispatch_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag uq">UNIQUE</span><span class="tag fk">FK → Dispatch_Log</span></td><td>One delivery record per dispatch. ON DELETE CASCADE</td></tr>
+        <tr><td class="col-name">Actual_Arrival</td><td class="col-type">TIMESTAMP</td><td class="col-const">NULL allowed</td><td>Exact time goods arrived at the camp</td></tr>
+        <tr><td class="col-name">Received_By</td><td class="col-type">VARCHAR(100)</td><td class="col-const">—</td><td>Name of the person who received the shipment</td></tr>
+        <tr><td class="col-name">Confirmation</td><td class="col-type">ENUM</td><td class="col-const"><span class="tag def">DEFAULT 'Received'</span></td><td><code>'Received'</code>, <code>'Damaged'</code>, <code>'Missing'</code>, <code>'Refused'</code></td></tr>
+        <tr><td class="col-name">Remarks</td><td class="col-type">TEXT</td><td class="col-const">—</td><td>Free-text notes about the delivery (optional)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Stock_Alert -->
+    <h3>12. Stock_Alert</h3>
+    <p>
+      Automatically populated by a trigger when inventory drops below <code>Min_Threshold</code>.
+      Automatically resolved (by a second trigger) when stock is replenished above the threshold.
+    </p>
+    <table>
+      <thead><tr><th>Column</th><th>Data Type</th><th>Constraints</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">Alert_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag pk">PK</span><span class="tag ai">AI</span></td><td>Unique identifier</td></tr>
+        <tr><td class="col-name">W_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag fk">FK → Warehouse</span></td><td>Warehouse with low stock. ON DELETE CASCADE</td></tr>
+        <tr><td class="col-name">Res_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag nn">NOT NULL</span><span class="tag fk">FK → Resource</span></td><td>The low-stock resource. ON DELETE CASCADE</td></tr>
+        <tr><td class="col-name">Alert_Time</td><td class="col-type">TIMESTAMP</td><td class="col-const"><span class="tag def">DEFAULT CURRENT_TIMESTAMP</span></td><td>When the alert was triggered</td></tr>
+        <tr><td class="col-name">Resolved</td><td class="col-type">BOOLEAN</td><td class="col-const"><span class="tag def">DEFAULT FALSE</span></td><td>FALSE = still low, TRUE = stock restored</td></tr>
+        <tr><td class="col-name">Resolved_At</td><td class="col-type">TIMESTAMP</td><td class="col-const">NULL allowed</td><td>When the stock was replenished (set automatically)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Audit_Log -->
+    <h3>13. Audit_Log</h3>
+    <p>
+      A write-only log table. Populated automatically by triggers every time a
+      <code>Request</code> status changes. Provides a full history for accountability.
+    </p>
+    <table>
+      <thead><tr><th>Column</th><th>Data Type</th><th>Constraints</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">Log_ID</td><td class="col-type">INT</td><td class="col-const"><span class="tag pk">PK</span><span class="tag ai">AI</span></td><td>Unique identifier</td></tr>
+        <tr><td class="col-name">Table_Name</td><td class="col-type">VARCHAR(50)</td><td class="col-const"><span class="tag nn">NOT NULL</span></td><td>Which table was changed (e.g. <code>'Request'</code>)</td></tr>
+        <tr><td class="col-name">Action</td><td class="col-type">ENUM</td><td class="col-const"><span class="tag nn">NOT NULL</span></td><td>Operation: <code>'INSERT'</code>, <code>'UPDATE'</code>, <code>'DELETE'</code></td></tr>
+        <tr><td class="col-name">Old_Value</td><td class="col-type">JSON</td><td class="col-const">—</td><td>Snapshot of the row before the change</td></tr>
+        <tr><td class="col-name">New_Value</td><td class="col-type">JSON</td><td class="col-const">—</td><td>Snapshot of the row after the change</td></tr>
+        <tr><td class="col-name">Changed_By</td><td class="col-type">VARCHAR(100)</td><td class="col-const">—</td><td>The MySQL user who made the change (captured via <code>USER()</code>)</td></tr>
+        <tr><td class="col-name">Changed_At</td><td class="col-type">TIMESTAMP</td><td class="col-const"><span class="tag def">DEFAULT CURRENT_TIMESTAMP</span></td><td>Exact time of the change</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── §5 Stored Procedures ── -->
+  <div class="section">
+    <div class="section-label">§ 5</div>
+    <h2>Stored Procedures</h2>
+    <p>
+      All four procedures follow the same pattern: start a transaction, lock the relevant rows
+      with <code>SELECT … FOR UPDATE</code>, validate the state, make the changes, and then
+      either commit or roll back if anything goes wrong.
+    </p>
+
+    <h3>sp_Approve_Request (p_Req_ID)</h3>
+    <p>Called by the Control Admin to approve a pending request.</p>
+    <table>
+      <thead><tr><th>Step</th><th>What it does</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Locks the <code>Request</code> row with <code>FOR UPDATE</code></td><td>Prevents two admins from approving the same request simultaneously</td></tr>
+        <tr><td>2</td><td>Checks <code>Status = 'Pending'</code></td><td>Cannot approve something already approved or cancelled</td></tr>
+        <tr><td>3</td><td>Calls <code>fn_Total_Stock</code> for every line item</td><td>Checks if combined stock across all warehouses is enough</td></tr>
+        <tr><td>4</td><td>Sets <code>Approved_Qty = Requested_Qty</code> on all line items</td><td>Locks in the quantities to be dispatched</td></tr>
+        <tr><td>5</td><td>Sets <code>Request.Status = 'Approved'</code></td><td>Moves request to the next stage</td></tr>
+        <tr><td>6</td><td>COMMIT</td><td>All or nothing — if any step fails, the whole transaction rolls back</td></tr>
+      </tbody>
+    </table>
+
+    <h3>sp_Dispatch_Request (p_Req_ID, p_W_ID)</h3>
+    <p>Called by the Warehouse Manager to dispatch goods from a specific warehouse.</p>
+    <table>
+      <thead><tr><th>Step</th><th>What it does</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Locks the <code>Request</code> row</td><td>Prevents double-dispatch</td></tr>
+        <tr><td>2</td><td>Checks <code>Status = 'Approved'</code></td><td>Can only dispatch approved requests</td></tr>
+        <tr><td>3</td><td>Calls <code>fn_Check_Stock</code> for every line item against <em>this warehouse</em></td><td>Ensures the chosen warehouse can fulfil the whole order</td></tr>
+        <tr><td>4</td><td>Deducts quantities from <code>Warehouse_Inventory</code></td><td>Reduces physical stock — triggers may fire a <code>Stock_Alert</code></td></tr>
+        <tr><td>5</td><td>Inserts a row in <code>Dispatch_Log</code> with ETA</td><td>Creates the shipment record with estimated arrival time</td></tr>
+        <tr><td>6</td><td>Sets <code>Request.Status = 'Dispatched'</code></td><td>Moves request forward</td></tr>
+        <tr><td>7</td><td>COMMIT</td><td>Atomic — stock deduction and dispatch log always happen together</td></tr>
+      </tbody>
+    </table>
+
+    <h3>sp_Confirm_Delivery (p_Dispatch_ID, p_Received_By)</h3>
+    <p>Called by the Camp Officer when the goods physically arrive at the camp.</p>
+    <table>
+      <thead><tr><th>Step</th><th>What it does</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Locks the <code>Dispatch_Log</code> row</td><td>Prevents duplicate confirmations</td></tr>
+        <tr><td>2</td><td>Updates <code>Dispatch_Log.Status = 'Delivered'</code></td><td>Marks the shipment as complete</td></tr>
+        <tr><td>3</td><td>Inserts into <code>Delivery_Status</code> with actual arrival time and receiver name</td><td>Permanent delivery record</td></tr>
+        <tr><td>4</td><td>Sets <code>Request.Status = 'Delivered'</code></td><td>Closes the request lifecycle</td></tr>
+        <tr><td>5</td><td>COMMIT</td><td>All three updates are atomic</td></tr>
+      </tbody>
+    </table>
+
+    <h3>sp_Restock (p_W_ID, p_Res_ID, p_Qty, p_Supplier)</h3>
+    <p>Called by the Warehouse Manager to add stock for a resource.</p>
+    <table>
+      <thead><tr><th>Step</th><th>What it does</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Inserts into <code>Restock_Log</code></td><td>Keeps a permanent record of the restock event</td></tr>
+        <tr><td>2</td><td>UPSERT into <code>Warehouse_Inventory</code> — inserts if new resource, otherwise adds to existing quantity</td><td>Handles both new stock and top-up of existing stock</td></tr>
+        <tr><td>3</td><td>COMMIT</td><td>Log and inventory update always happen together</td></tr>
+        <tr><td colspan="3" style="color:var(--ink3);font-size:11.5px">The inventory update triggers <code>trg_after_inventory_restock</code>, which automatically marks any open <code>Stock_Alert</code> as resolved if quantity is now above threshold.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── §6 Triggers ── -->
+  <div class="section">
+    <div class="section-label">§ 6</div>
+    <h2>Triggers</h2>
+    <p>
+      Triggers are automatic actions the database takes when a specific event happens
+      on a table. No application code needs to call them — MySQL fires them on its own.
+    </p>
+
+    <table>
+      <thead><tr><th>Trigger Name</th><th>Fires When</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="col-name">trg_after_inventory_update</td>
+          <td>AFTER UPDATE on <code>Warehouse_Inventory</code></td>
+          <td>If <code>NEW.Quantity &lt; NEW.Min_Threshold</code> AND the old quantity was at or above the threshold, inserts a new row into <code>Stock_Alert</code>. This means an alert fires exactly once when stock first crosses the threshold downward — not on every update.</td>
+        </tr>
+        <tr>
+          <td class="col-name">trg_after_inventory_restock</td>
+          <td>AFTER UPDATE on <code>Warehouse_Inventory</code></td>
+          <td>If <code>NEW.Quantity &gt;= NEW.Min_Threshold</code> AND the old quantity was below the threshold, marks all open alerts for that warehouse/resource as resolved by setting <code>Resolved = TRUE</code> and <code>Resolved_At = NOW()</code>.</td>
+        </tr>
+        <tr>
+          <td class="col-name">trg_before_request_details_insert</td>
+          <td>BEFORE INSERT on <code>Request_Details</code></td>
+          <td>Checks that the parent <code>Request</code> is still in <code>'Pending'</code> status. If someone tries to add items to an already-approved request, the trigger raises an error and blocks the insert. This enforces workflow integrity.</td>
+        </tr>
+        <tr>
+          <td class="col-name">trg_after_request_status_update</td>
+          <td>AFTER UPDATE on <code>Request</code></td>
+          <td>When the <code>Status</code> column changes, inserts a row into <code>Audit_Log</code> capturing the old status, new status, the MySQL user who made the change, and the timestamp. This provides a complete, tamper-proof history of every status transition.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── §7 Functions ── -->
+  <div class="section">
+    <div class="section-label">§ 7</div>
+    <h2>SQL Functions</h2>
+    <p>Three utility functions are used inside stored procedures to keep the procedure logic clean and reusable.</p>
+
+    <table>
+      <thead><tr><th>Function</th><th>Parameters</th><th>Returns</th><th>Used in</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="col-name">fn_Check_Stock</td>
+          <td><code>Res_ID, W_ID</code></td>
+          <td>INT</td>
+          <td><code>sp_Dispatch_Request</code></td>
+          <td>Returns the current quantity of a specific resource in a specific warehouse. Returns 0 if no row exists.</td>
+        </tr>
+        <tr>
+          <td class="col-name">fn_Total_Stock</td>
+          <td><code>Res_ID</code></td>
+          <td>INT</td>
+          <td><code>sp_Approve_Request</code></td>
+          <td>Returns the <em>total</em> quantity of a resource summed across all warehouses. Used for approval because we approve based on overall availability, not any single warehouse.</td>
+        </tr>
+        <tr>
+          <td class="col-name">fn_Calculate_ETA</td>
+          <td><code>Distance_Km</code></td>
+          <td>DATETIME</td>
+          <td><code>sp_Dispatch_Request</code></td>
+          <td>Estimates arrival time based on distance. Formula: <code>NOW() + (distance / 25 + 2) hours</code> — assumes 25 km/h average speed plus 2 hours of loading/admin time.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── §8 Views ── -->
+  <div class="section">
+    <div class="section-label">§ 8</div>
+    <h2>Views</h2>
+    <p>
+      Views are saved queries that act like virtual tables. They make it easy to get
+      commonly needed data without writing complex JOINs every time. Role-restricted
+      users are granted access to views rather than base tables.
+    </p>
+
+    <table>
+      <thead><tr><th>View Name</th><th>What it shows</th><th>Used by</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="col-name">vw_Current_Inventory</td>
+          <td>Live stock levels for every resource in every warehouse. Shows warehouse name, resource name, quantity, minimum threshold, and a computed status column: <code>'OUT OF STOCK'</code>, <code>'LOW STOCK'</code>, or <code>'OK'</code>.</td>
+          <td>Warehouse Manager inventory page, Admin inventory page</td>
+        </tr>
+        <tr>
+          <td class="col-name">vw_Active_Requests</td>
+          <td>All requests that are currently in flight (Pending, Approved, or Dispatched) — joined with camp name and event name for readability.</td>
+          <td>Admin request queue, Camp Officer request list</td>
+        </tr>
+        <tr>
+          <td class="col-name">vw_Warehouse_Utilization</td>
+          <td>Per-warehouse summary showing total unique resource types stored and total item count. Useful for capacity planning.</td>
+          <td>Admin Warehouses page</td>
+        </tr>
+        <tr>
+          <td class="col-name">vw_Delivery_Performance</td>
+          <td>Completed deliveries with time-in-transit calculated (<code>TIMESTAMPDIFF</code> between dispatch and actual arrival) and delivery confirmation status.</td>
+          <td>Analytics / reporting</td>
+        </tr>
+        <tr>
+          <td class="col-name">vw_Crisis_Demand</td>
+          <td>Aggregates total requested vs. total fulfilled quantities, grouped by disaster severity level and resource type. Shows how well the system is meeting demand at different crisis levels.</td>
+          <td>Analytics / reporting</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── §9 RBAC ── -->
+  <div class="section">
+    <div class="section-label">§ 9</div>
+    <h2>Role-Based Access Control</h2>
+    <p>
+      Three MySQL application users are created with precisely the minimum permissions
+      each role needs. This is security enforced at the database level — even if the
+      Express application had a bug, the database would still reject unauthorized operations.
+    </p>
+
+    <table>
+      <thead><tr><th>MySQL User</th><th>Password</th><th>Role</th><th>Permissions</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="col-name">cc_admin</td>
+          <td><code>cc_pass123</code></td>
+          <td>Control Admin</td>
+          <td><code>GRANT ALL PRIVILEGES ON DRAS.*</code> — full read/write access to all tables and procedures</td>
+        </tr>
+        <tr>
+          <td class="col-name">camp_officer</td>
+          <td><code>camp_pass123</code></td>
+          <td>Camp Officer</td>
+          <td>
+            <code>SELECT</code> on <code>vw_Active_Requests</code>, <code>vw_Current_Inventory</code><br>
+            <code>INSERT</code> on <code>Request</code>, <code>Request_Details</code><br>
+            <code>EXECUTE</code> on <code>sp_Confirm_Delivery</code><br>
+            <em>Cannot UPDATE Warehouse_Inventory or Request directly — only through procedures</em>
+          </td>
+        </tr>
+        <tr>
+          <td class="col-name">warehouse_mgr</td>
+          <td><code>wh_pass123</code></td>
+          <td>Warehouse Manager</td>
+          <td>
+            <code>SELECT</code> on <code>vw_Current_Inventory</code>, <code>vw_Active_Requests</code><br>
+            <code>EXECUTE</code> on <code>sp_Dispatch_Request</code>, <code>sp_Restock</code><br>
+            <em>Cannot directly UPDATE or DELETE from Warehouse_Inventory or Request</em>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="box amber">
+      <strong>Why this matters:</strong> The <code>camp_officer</code> user has INSERT permission on the
+      <code>Request</code> table but <em>cannot UPDATE its Status column</em>. Status changes only
+      happen through stored procedures, which are owned by a higher-privileged user. This means a camp
+      officer cannot self-approve their own request even if they tried.
+    </div>
+  </div>
+
+  <!-- ── §10 API ── -->
+  <div class="section">
+    <div class="section-label">§ 10</div>
+    <h2>Backend API</h2>
+    <p>
+      The backend is an Express.js server (<code>server.js</code>) running on port 3001.
+      It exposes a REST API that the React frontend consumes. Every route that changes
+      data calls a stored procedure — no direct SQL <code>INSERT</code> or <code>UPDATE</code>
+      statements for mutations.
+    </p>
+    <p>
+      The Vite dev server proxies all <code>/api/…</code> requests from the browser
+      (port 5173) to Express (port 3001), so the browser never needs to know the backend's
+      port.
+    </p>
+
+    <h3>Health &amp; Stats</h3>
+    <table>
+      <thead><tr><th>Method</th><th>Path</th><th>What it returns</th><th>Called by</th></tr></thead>
+      <tbody>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/health</code></td><td>Database connection status</td><td>System startup check</td></tr>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/stats</code></td><td>Aggregate counts: active events, pending requests, in-transit dispatches, open alerts</td><td>Admin Overview dashboard stat cards</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Disaster Events</h3>
+    <table>
+      <thead><tr><th>Method</th><th>Path</th><th>What it returns</th><th>Called by</th></tr></thead>
+      <tbody>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/events</code></td><td>All disaster events with name, location, level, status, start date, and number of linked camps</td><td>Login page live status panel, Admin Events page, Admin Overview events card</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Requests</h3>
+    <table>
+      <thead><tr><th>Method</th><th>Path</th><th>Parameters</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/requests</code></td><td><code>?status=Pending</code> or <code>?campId=1</code></td><td>Returns requests filtered by status or camp. Includes resource summary and total item count from a subquery.</td></tr>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/requests/:id</code></td><td>Request ID in URL</td><td>Returns a single request with all line items AND the linked dispatch and delivery details — used for the lifecycle detail modal.</td></tr>
+        <tr><td><span class="method post">POST</span></td><td><code>/api/requests</code></td><td>Body: <code>{ campId, ccId, priority, items: [{resId, qty}] }</code></td><td>Creates a new Request row and one Request_Details row per item. This is a direct INSERT (not a procedure) since creating a request is a simple insert with no stock checks needed.</td></tr>
+        <tr><td><span class="method post">POST</span></td><td><code>/api/requests/:id/approve</code></td><td>Request ID in URL</td><td>Calls <code>CALL sp_Approve_Request(id)</code>. Validates stock, sets status to Approved.</td></tr>
+        <tr><td><span class="method post">POST</span></td><td><code>/api/requests/:id/dispatch</code></td><td>Body: <code>{ warehouseId }</code></td><td>Calls <code>CALL sp_Dispatch_Request(id, warehouseId)</code>. Deducts stock, creates dispatch log.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Dispatches</h3>
+    <table>
+      <thead><tr><th>Method</th><th>Path</th><th>Parameters</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/dispatches</code></td><td><code>?warehouseId=1</code> or <code>?status=In_Transit</code></td><td>Returns dispatch log joined with warehouse name. Filterable by warehouse or status.</td></tr>
+        <tr><td><span class="method post">POST</span></td><td><code>/api/dispatches/:id/confirm</code></td><td>Body: <code>{ receivedBy }</code></td><td>Calls <code>CALL sp_Confirm_Delivery(id, receivedBy)</code>. Records arrival, closes request.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Inventory &amp; Alerts</h3>
+    <table>
+      <thead><tr><th>Method</th><th>Path</th><th>Parameters</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/inventory</code></td><td><code>?warehouseId=1</code></td><td>Returns stock levels from <code>vw_Current_Inventory</code>. If warehouseId is given, filters to that warehouse only. Includes resource name, type, quantity, threshold, and status.</td></tr>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/alerts</code></td><td><code>?warehouseId=1</code></td><td>Returns open (unresolved) Stock_Alert rows joined with warehouse and resource names.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Warehouses, Camps, Resources</h3>
+    <table>
+      <thead><tr><th>Method</th><th>Path</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/warehouses</code></td><td>Lists all warehouses with ID, name, location, capacity</td></tr>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/warehouses/:id/stats</code></td><td>Aggregate stats for one warehouse: SKU count, items below threshold, approved queue size, in-transit count, open alert count</td></tr>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/resources</code></td><td>Lists all resources (ID, name, unit) — used to populate dropdowns in the New Request form and Restock form</td></tr>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/camps</code></td><td>Lists all relief camps joined with their event name and level</td></tr>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/camps/:id/stats</code></td><td>Stats for one camp: active requests, awaiting delivery, delivered in last 7 days, pending confirmations</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Restock &amp; Audit</h3>
+    <table>
+      <thead><tr><th>Method</th><th>Path</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><span class="method post">POST</span></td><td><code>/api/restock</code></td><td>Body: <code>{ warehouseId, resourceId, qty, supplier }</code>. Calls <code>CALL sp_Restock(…)</code>. Updates inventory and resolves alerts.</td></tr>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/restock-log</code></td><td>Returns restock history from <code>Restock_Log</code> joined with resource name. Optionally filtered by <code>?warehouseId=</code>.</td></tr>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/audit</code></td><td>Returns the last 20 rows from <code>Audit_Log</code> ordered by most recent. Includes action, table, old/new JSON values, changed-by user, and timestamp.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── §11 Frontend ── -->
+  <div class="section">
+    <div class="section-label">§ 11</div>
+    <h2>Frontend</h2>
+    <p>
+      The frontend is a React 18 single-page application built with Vite. Navigation between
+      pages is handled by storing a page key in <code>sessionStorage</code> — no routing
+      library is used. There are five screens.
+    </p>
+
+    <h3>Landing Page</h3>
+    <p>
+      A public-facing introduction to the project. Shows the system description, the
+      four-step request lifecycle diagram, feature highlights (ACID safety, procedure-only
+      mutations, auto-fired alerts), and role descriptions. Has a Sign In button to enter
+      the system.
+    </p>
+
+    <h3>Login Page</h3>
+    <p>
+      Three-role sign-in page. Role selector buttons auto-fill the user ID. Clicking Sign In
+      validates against hardcoded demo credentials and navigates to the corresponding
+      dashboard. The right panel shows live active disaster events fetched from
+      <code>GET /api/events</code>. A <em>← Home</em> button returns to the landing page.
+    </p>
+
+    <h3>Control Admin Dashboard</h3>
+    <p>Full access dashboard with seven sidebar sections:</p>
+    <ul>
+      <li><strong>Overview</strong> — stats grid, request queue with tabs (Pending / Approved / In transit / Delivered), active events list, stock alerts, recent audit log, stored procedure reference</li>
+      <li><strong>Disaster Events</strong> — full table of all events from the database</li>
+      <li><strong>Requests</strong> — standalone tabbed request table; Approve button on Pending rows; Eye button on other rows opens a lifecycle detail modal</li>
+      <li><strong>Warehouses</strong> — table of all warehouses with capacity</li>
+      <li><strong>Inventory</strong> — full cross-warehouse inventory with stock status badges</li>
+      <li><strong>Dispatches</strong> — complete dispatch log</li>
+      <li><strong>Audit Log</strong> — full 20-entry audit log</li>
+    </ul>
+
+    <h3>Camp Officer Dashboard</h3>
+    <p>Camp-specific dashboard with four sidebar sections:</p>
+    <ul>
+      <li><strong>Overview</strong> — camp details card and request count breakdown by status</li>
+      <li><strong>My Requests</strong> — full request list with ETA column; Confirm button appears for dispatched items not yet confirmed</li>
+      <li><strong>New Request</strong> — form to raise a request: priority selector, line items (resource dropdown + quantity), add/remove items</li>
+      <li><strong>Incoming</strong> — dispatch records linked to this camp's requests, with Confirm button</li>
+    </ul>
+
+    <h3>Warehouse Manager Dashboard</h3>
+    <p>Warehouse-focused dashboard with six sidebar sections:</p>
+    <ul>
+      <li><strong>Inventory</strong> — live stock table with progress bars vs threshold, quick-Restock button per row</li>
+      <li><strong>Alerts</strong> — all open stock alerts with fill percentage bar, Restock button</li>
+      <li><strong>Approved queue</strong> — approved requests waiting for dispatch; Dispatch button per request</li>
+      <li><strong>Dispatches</strong> — history of all dispatches from this warehouse</li>
+      <li><strong>Restock</strong> — form: resource dropdown, quantity, supplier; submits to <code>sp_Restock</code></li>
+      <li><strong>Restock log</strong> — history of all restock operations for this warehouse</li>
+    </ul>
+  </div>
+
+  <!-- ── §12 ACID ── -->
+  <div class="section">
+    <div class="section-label">§ 12</div>
+    <h2>ACID Compliance &amp; Concurrency Safety</h2>
+    <p>
+      The most critical concurrency problem in a system like this is two admins
+      simultaneously approving two requests that together exceed available stock.
+      Without proper locking, both could read "stock is sufficient" and both approve,
+      leading to a stock deficit when dispatch happens.
+    </p>
+
+    <h3>How DRAS solves this</h3>
+    <div class="box green">
+      <strong>Row-level locking with SELECT … FOR UPDATE</strong><br>
+      When <code>sp_Approve_Request</code> starts, it immediately locks the <code>Request</code>
+      row with <code>SELECT … FOR UPDATE</code>. This means if two approvals are triggered at
+      the same millisecond, one of them will block and wait for the first to finish. By the time
+      the second one reads the stock level, it sees the updated numbers — so it cannot
+      double-approve against the same stock.
+    </div>
+
+    <table>
+      <thead><tr><th>ACID Property</th><th>How DRAS enforces it</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Atomicity</strong></td>
+          <td>Every procedure wraps its changes in <code>START TRANSACTION … COMMIT</code>. If anything fails (e.g., insufficient stock, wrong status), <code>ROLLBACK</code> fires and nothing is written. The database never ends up half-updated.</td>
+        </tr>
+        <tr>
+          <td><strong>Consistency</strong></td>
+          <td>Table-level constraints (CHECK, NOT NULL, UNIQUE, FK) and trigger guards ensure the data always follows business rules. For example, <code>Approved_Qty</code> can never exceed <code>Requested_Qty</code>, and items cannot be added to a non-Pending request.</td>
+        </tr>
+        <tr>
+          <td><strong>Isolation</strong></td>
+          <td><code>SELECT … FOR UPDATE</code> inside transactions provides row-level isolation. Concurrent approvals and dispatches cannot interfere with each other.</td>
+        </tr>
+        <tr>
+          <td><strong>Durability</strong></td>
+          <td>MySQL InnoDB engine writes committed transactions to disk. A server crash after a COMMIT will not lose the data.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════════════════ §13 ER DIAGRAM ════════════════════════════ -->
+  <div class="section">
+    <div class="section-label">§ 13</div>
+    <h2>Entity-Relationship Diagram</h2>
+    <p>
+      The diagram below shows all 13 entities, their primary keys, and every relationship
+      with its cardinality. Tier numbers match the dependency order used in
+      <code>01_ddl_tables.sql</code> — lower tiers have no foreign-key dependencies and are
+      created first.
+    </p>
+
+    <style>
+      /* ── ER diagram styles ── */
+      .er-wrap { overflow-x: auto; padding: 8px 0 20px; }
+      .er-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        min-width: 720px;
+      }
+      .er-entity {
+        border: 1.5px solid var(--line2);
+        border-radius: 6px;
+        overflow: hidden;
+        background: var(--surface);
+        font-size: 12px;
+      }
+      .er-header {
+        background: var(--ink);
+        color: #fff;
+        padding: 6px 10px;
+        font-weight: 700;
+        font-size: 11.5px;
+        letter-spacing: 0.02em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .er-tier { font-size: 9px; color: #9ca3af; font-family: 'JetBrains Mono', monospace; font-weight: 400; }
+      .er-attr { padding: 4px 10px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 8px; }
+      .er-attr:last-child { border-bottom: none; }
+      .er-attr.pk  { background: #fffbeb; }
+      .er-attr.fk  { background: #eff6ff; }
+      .er-attr-name { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+      .er-attr-meta { font-size: 10px; color: var(--ink3); }
+
+      .rel-table { margin: 20px 0; }
+      .rel-badge {
+        display: inline-block;
+        background: var(--ink);
+        color: #fff;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-weight: 600;
+      }
+    </style>
+
+    <div class="er-wrap">
+      <div class="er-grid">
+
+        <!-- Tier 1 -->
+        <div class="er-entity">
+          <div class="er-header">Control_Center <span class="er-tier">TIER 1</span></div>
+          <div class="er-attr pk"><span class="er-attr-name">CC_ID</span><span class="er-attr-meta">PK · INT</span></div>
+          <div class="er-attr"><span class="er-attr-name">Name</span><span class="er-attr-meta">VARCHAR · NN</span></div>
+          <div class="er-attr"><span class="er-attr-name">Location</span><span class="er-attr-meta">VARCHAR · NN</span></div>
+          <div class="er-attr"><span class="er-attr-name">Contact</span><span class="er-attr-meta">VARCHAR</span></div>
+        </div>
+
+        <div class="er-entity">
+          <div class="er-header">Disaster_Event <span class="er-tier">TIER 1</span></div>
+          <div class="er-attr pk"><span class="er-attr-name">Event_ID</span><span class="er-attr-meta">PK · INT</span></div>
+          <div class="er-attr"><span class="er-attr-name">Name</span><span class="er-attr-meta">VARCHAR · NN</span></div>
+          <div class="er-attr"><span class="er-attr-name">Level</span><span class="er-attr-meta">ENUM · NN</span></div>
+          <div class="er-attr"><span class="er-attr-name">Status</span><span class="er-attr-meta">ENUM · DEF Active</span></div>
+          <div class="er-attr"><span class="er-attr-name">Start_Date</span><span class="er-attr-meta">DATETIME · NN</span></div>
+        </div>
+
+        <div class="er-entity">
+          <div class="er-header">Resource <span class="er-tier">TIER 1</span></div>
+          <div class="er-attr pk"><span class="er-attr-name">Res_ID</span><span class="er-attr-meta">PK · INT</span></div>
+          <div class="er-attr"><span class="er-attr-name">Name</span><span class="er-attr-meta">VARCHAR · NN · UQ</span></div>
+          <div class="er-attr"><span class="er-attr-name">Type</span><span class="er-attr-meta">VARCHAR · NN</span></div>
+          <div class="er-attr"><span class="er-attr-name">Unit</span><span class="er-attr-meta">VARCHAR · NN</span></div>
+        </div>
+
+        <div class="er-entity">
+          <div class="er-header">Warehouse <span class="er-tier">TIER 1</span></div>
+          <div class="er-attr pk"><span class="er-attr-name">W_ID</span><span class="er-attr-meta">PK · INT</span></div>
+          <div class="er-attr"><span class="er-attr-name">Name</span><span class="er-attr-meta">VARCHAR · NN</span></div>
+          <div class="er-attr"><span class="er-attr-name">Location</span><span class="er-attr-meta">VARCHAR · NN</span></div>
+          <div class="er-attr"><span class="er-attr-name">Capacity_m3</span><span class="er-attr-meta">DECIMAL</span></div>
+        </div>
+
+        <!-- Tier 2 -->
+        <div class="er-entity">
+          <div class="er-header">Relief_Camp <span class="er-tier">TIER 2</span></div>
+          <div class="er-attr pk"><span class="er-attr-name">Camp_ID</span><span class="er-attr-meta">PK · INT</span></div>
+          <div class="er-attr fk"><span class="er-attr-name">Event_ID</span><span class="er-attr-meta">FK → Disaster_Event</span></div>
+          <div class="er-attr"><span class="er-attr-name">Name</span><span class="er-attr-meta">VARCHAR · NN</span></div>
+          <div class="er-attr"><span class="er-attr-name">Current_Occupancy</span><span class="er-attr-meta">INT · DEF 0</span></div>
+          <div class="er-attr"><span class="er-attr-name">Max_Capacity</span><span class="er-attr-meta">INT · NN</span></div>
+        </div>
+
+        <div class="er-entity">
+          <div class="er-header">Warehouse_Inventory <span class="er-tier">TIER 2</span></div>
+          <div class="er-attr pk"><span class="er-attr-name">Inv_ID</span><span class="er-attr-meta">PK · INT</span></div>
+          <div class="er-attr fk"><span class="er-attr-name">W_ID</span><span class="er-attr-meta">FK → Warehouse</span></div>
+          <div class="er-attr fk"><span class="er-attr-name">Res_ID</span><span class="er-attr-meta">FK → Resource</span></div>
+          <div class="er-attr"><span class="er-attr-name">Quantity</span><span class="er-attr-meta">INT ≥ 0 · DEF 0</span></div>
+          <div class="er-attr"><span class="er-attr-name">Min_Threshold</span><span class="er-attr-meta">INT · DEF 10</span></div>
+          <div class="er-attr"><span class="er-attr-name">(W_ID, Res_ID)</span><span class="er-attr-meta">UNIQUE</span></div>
+        </div>
+
+        <!-- Tier 3 -->
+        <div class="er-entity">
+          <div class="er-header">Request <span class="er-tier">TIER 3</span></div>
+          <div class="er-attr pk"><span class="er-attr-name">Req_ID</span><span class="er-attr-meta">PK · INT</span></div>
+          <div class="er-attr fk"><span class="er-attr-name">CC_ID</span><span class="er-attr-meta">FK → Control_Center</span></div>
+          <div class="er-attr fk"><span class="er-attr-name">Camp_ID</span><span class="er-attr-meta">FK → Relief_Camp</span></div>
+          <div class="er-attr"><span class="er-attr-name">Priority</span><span class="er-attr-meta">ENUM · DEF Medium</span></div>
+          <div class="er-attr"><span class="er-attr-name">Status</span><span class="er-attr-meta">ENUM · DEF Pending</span></div>
+          <div class="er-attr"><span class="er-attr-name">Request_Time</span><span class="er-attr-meta">TIMESTAMP</span></div>
+        </div>
+
+        <!-- Tier 4 -->
+        <div class="er-entity">
+          <div class="er-header">Request_Details <span class="er-tier">TIER 4</span></div>
+          <div class="er-attr pk"><span class="er-attr-name">Req_Detail_ID</span><span class="er-attr-meta">PK · INT</span></div>
+          <div class="er-attr fk"><span class="er-attr-name">Req_ID</span><span class="er-attr-meta">FK → Request (CASCADE)</span></div>
+          <div class="er-attr fk"><span class="er-attr-name">Res_ID</span><span class="er-attr-meta">FK → Resource</span></div>
+          <div class="er-attr"><span class="er-attr-name">Requested_Qty</span><span class="er-attr-meta">INT &gt; 0 · NN</span></div>
+          <div class="er-attr"><span class="er-attr-name">Approved_Qty</span><span class="er-attr-meta">INT 0–Req · DEF 0</span></div>
+        </div>
+
+        <div class="er-entity">
+          <div class="er-header">Dispatch_Log <span class="er-tier">TIER 4</span></div>
+          <div class="er-attr pk"><span class="er-attr-name">Dispatch_ID</span><span class="er-attr-meta">PK · INT</span></div>
+          <div class="er-attr fk"><span class="er-attr-name">Req_ID</span><span class="er-attr-meta">FK → Request · UQ</span></div>
+          <div class="er-attr fk"><span class="er-attr-name">W_ID</span><span class="er-attr-meta">FK → Warehouse</span></div>
+          <div class="er-attr"><span class="er-attr-name">Dispatch_Time</span><span class="er-attr-meta">TIMESTAMP</span></div>
+          <div class="er-attr"><span class="er-attr-name">Estimated_Arrival</span><span class="er-attr-meta">DATETIME</span></div>
+          <div class="er-attr"><span class="er-attr-name">Status</span><span class="er-attr-meta">ENUM · DEF Packed</span></div>
+        </div>
+
+        <div class="er-entity">
+          <div class="er-header">Restock_Log <span class="er-tier">TIER 4</span></div>
+          <div class="er-attr pk"><span class="er-attr-name">Restock_ID</span><span class="er-attr-meta">PK · INT</span></div>
+          <div class="er-attr fk"><span class="er-attr-name">W_ID</span><span class="er-attr-meta">FK → Warehouse (CASCADE)</span></div>
+          <div class="er-attr fk"><span class="er-attr-name">Res_ID</span><span class="er-attr-meta">FK → Resource</span></div>
+          <div class="er-attr"><span class="er-attr-name">Quantity</span><span class="er-attr-meta">INT &gt; 0 · NN</span></div>
+          <div class="er-attr"><span class="er-attr-name">Supplier</span><span class="er-attr-meta">VARCHAR</span></div>
+        </div>
+
+        <!-- Tier 5 -->
+        <div class="er-entity">
+          <div class="er-header">Delivery_Status <span class="er-tier">TIER 5</span></div>
+          <div class="er-attr pk"><span class="er-attr-name">Delivery_ID</span><span class="er-attr-meta">PK · INT</span></div>
+          <div class="er-attr fk"><span class="er-attr-name">Dispatch_ID</span><span class="er-attr-meta">FK → Dispatch_Log · UQ</span></div>
+          <div class="er-attr"><span class="er-attr-name">Actual_Arrival</span><span class="er-attr-meta">TIMESTAMP · NULL</span></div>
+          <div class="er-attr"><span class="er-attr-name">Received_By</span><span class="er-attr-meta">VARCHAR</span></div>
+          <div class="er-attr"><span class="er-attr-name">Confirmation</span><span class="er-attr-meta">ENUM · DEF Received</span></div>
+        </div>
+
+        <div class="er-entity">
+          <div class="er-header">Stock_Alert <span class="er-tier">TIER 5</span></div>
+          <div class="er-attr pk"><span class="er-attr-name">Alert_ID</span><span class="er-attr-meta">PK · INT</span></div>
+          <div class="er-attr fk"><span class="er-attr-name">W_ID</span><span class="er-attr-meta">FK → Warehouse (CASCADE)</span></div>
+          <div class="er-attr fk"><span class="er-attr-name">Res_ID</span><span class="er-attr-meta">FK → Resource (CASCADE)</span></div>
+          <div class="er-attr"><span class="er-attr-name">Resolved</span><span class="er-attr-meta">BOOLEAN · DEF FALSE</span></div>
+          <div class="er-attr"><span class="er-attr-name">Resolved_At</span><span class="er-attr-meta">TIMESTAMP · NULL</span></div>
+        </div>
+
+        <div class="er-entity">
+          <div class="er-header">Audit_Log <span class="er-tier">TIER 5</span></div>
+          <div class="er-attr pk"><span class="er-attr-name">Log_ID</span><span class="er-attr-meta">PK · INT</span></div>
+          <div class="er-attr"><span class="er-attr-name">Table_Name</span><span class="er-attr-meta">VARCHAR · NN</span></div>
+          <div class="er-attr"><span class="er-attr-name">Action</span><span class="er-attr-meta">ENUM · NN</span></div>
+          <div class="er-attr"><span class="er-attr-name">Old_Value</span><span class="er-attr-meta">JSON</span></div>
+          <div class="er-attr"><span class="er-attr-name">New_Value</span><span class="er-attr-meta">JSON</span></div>
+          <div class="er-attr"><span class="er-attr-name">Changed_By</span><span class="er-attr-meta">VARCHAR</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <h3>Relationships Summary</h3>
+    <table class="rel-table">
+      <thead><tr><th>Parent Table</th><th>Child Table</th><th>Cardinality</th><th>Foreign Key</th><th>On Delete</th><th>On Update</th></tr></thead>
+      <tbody>
+        <tr><td>Disaster_Event</td><td>Relief_Camp</td><td><span class="rel-badge">1 : N</span></td><td>Camp.Event_ID</td><td>RESTRICT</td><td>CASCADE</td></tr>
+        <tr><td>Warehouse</td><td>Warehouse_Inventory</td><td><span class="rel-badge">1 : N</span></td><td>Inv.W_ID</td><td>RESTRICT</td><td>CASCADE</td></tr>
+        <tr><td>Resource</td><td>Warehouse_Inventory</td><td><span class="rel-badge">1 : N</span></td><td>Inv.Res_ID</td><td>RESTRICT</td><td>CASCADE</td></tr>
+        <tr><td>Warehouse + Resource</td><td>Warehouse_Inventory</td><td><span class="rel-badge">M : N resolved</span></td><td>(W_ID, Res_ID) UNIQUE</td><td>—</td><td>—</td></tr>
+        <tr><td>Control_Center</td><td>Request</td><td><span class="rel-badge">1 : N</span></td><td>Req.CC_ID</td><td>RESTRICT</td><td>CASCADE</td></tr>
+        <tr><td>Relief_Camp</td><td>Request</td><td><span class="rel-badge">1 : N</span></td><td>Req.Camp_ID</td><td>RESTRICT</td><td>CASCADE</td></tr>
+        <tr><td>Request</td><td>Request_Details</td><td><span class="rel-badge">1 : N</span></td><td>RD.Req_ID</td><td>CASCADE</td><td>CASCADE</td></tr>
+        <tr><td>Resource</td><td>Request_Details</td><td><span class="rel-badge">1 : N</span></td><td>RD.Res_ID</td><td>RESTRICT</td><td>CASCADE</td></tr>
+        <tr><td>Request</td><td>Dispatch_Log</td><td><span class="rel-badge">1 : 1</span></td><td>DL.Req_ID UNIQUE</td><td>RESTRICT</td><td>CASCADE</td></tr>
+        <tr><td>Warehouse</td><td>Dispatch_Log</td><td><span class="rel-badge">1 : N</span></td><td>DL.W_ID</td><td>RESTRICT</td><td>CASCADE</td></tr>
+        <tr><td>Dispatch_Log</td><td>Delivery_Status</td><td><span class="rel-badge">1 : 1</span></td><td>DS.Dispatch_ID UNIQUE</td><td>CASCADE</td><td>CASCADE</td></tr>
+        <tr><td>Warehouse</td><td>Restock_Log</td><td><span class="rel-badge">1 : N</span></td><td>RL.W_ID</td><td>CASCADE</td><td>CASCADE</td></tr>
+        <tr><td>Resource</td><td>Restock_Log</td><td><span class="rel-badge">1 : N</span></td><td>RL.Res_ID</td><td>RESTRICT</td><td>CASCADE</td></tr>
+        <tr><td>Warehouse</td><td>Stock_Alert</td><td><span class="rel-badge">1 : N</span></td><td>SA.W_ID</td><td>CASCADE</td><td>CASCADE</td></tr>
+        <tr><td>Resource</td><td>Stock_Alert</td><td><span class="rel-badge">1 : N</span></td><td>SA.Res_ID</td><td>CASCADE</td><td>CASCADE</td></tr>
+        <tr><td>Audit_Log</td><td>—</td><td><span class="rel-badge">standalone</span></td><td>No FKs — populated only by triggers</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════════════════ §14 NORMALIZATION ═════════════════════════ -->
+  <div class="section">
+    <div class="section-label">§ 14</div>
+    <h2>Normalization Analysis</h2>
+    <p>
+      All 13 tables in DRAS satisfy <strong>Boyce-Codd Normal Form (BCNF)</strong>. The
+      analysis below demonstrates this for the five most complex tables. The remaining
+      eight tables are trivially normalized because each has a single-column primary key
+      and no multi-valued or transitive dependencies.
+    </p>
+
+    <div class="box accent">
+      <strong>BCNF rule:</strong> For every non-trivial functional dependency X → Y in a relation,
+      X must be a superkey (i.e., X alone can uniquely identify every row in the table).
+      If this holds for all FDs, the table is in BCNF.
+    </div>
+
+    <h3>1. Request</h3>
+    <table>
+      <thead><tr><th>Functional Dependency</th><th>Left side is superkey?</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td><code>Req_ID → CC_ID, Camp_ID, Priority, Status, Request_Time</code></td><td>Yes — Req_ID is PK</td><td>✓ BCNF</td></tr>
+      </tbody>
+    </table>
+    <p>No partial or transitive dependencies exist. Priority and Status depend only on Req_ID, not on each other or on Camp_ID.</p>
+
+    <h3>2. Request_Details</h3>
+    <table>
+      <thead><tr><th>Functional Dependency</th><th>Left side is superkey?</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td><code>Req_Detail_ID → Req_ID, Res_ID, Requested_Qty, Approved_Qty</code></td><td>Yes — Req_Detail_ID is PK</td><td>✓ BCNF</td></tr>
+        <tr><td><code>(Req_ID, Res_ID) → Requested_Qty, Approved_Qty</code></td><td>Yes — (Req_ID, Res_ID) is a candidate key</td><td>✓ BCNF</td></tr>
+      </tbody>
+    </table>
+    <p>
+      There is no dependency of <code>Approved_Qty</code> on <code>Requested_Qty</code> — they are
+      independently set at different stages of the workflow. The CHECK constraint
+      (<code>Approved_Qty ≤ Requested_Qty</code>) is a domain constraint, not a functional dependency.
+    </p>
+
+    <h3>3. Warehouse_Inventory</h3>
+    <table>
+      <thead><tr><th>Functional Dependency</th><th>Left side is superkey?</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td><code>Inv_ID → W_ID, Res_ID, Quantity, Min_Threshold</code></td><td>Yes — Inv_ID is PK</td><td>✓ BCNF</td></tr>
+        <tr><td><code>(W_ID, Res_ID) → Quantity, Min_Threshold</code></td><td>Yes — (W_ID, Res_ID) is a candidate key (UNIQUE constraint)</td><td>✓ BCNF</td></tr>
+      </tbody>
+    </table>
+    <p>
+      This table resolves the M:N relationship between Warehouse and Resource into a proper
+      associative entity. <code>Quantity</code> is a fact about the pair (W_ID, Res_ID) — not about
+      either entity alone — so it belongs here and not in either parent table. This satisfies
+      the requirement for no partial dependencies.
+    </p>
+
+    <h3>4. Relief_Camp</h3>
+    <table>
+      <thead><tr><th>Functional Dependency</th><th>Left side is superkey?</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td><code>Camp_ID → Event_ID, Name, Location, Current_Occupancy, Max_Capacity</code></td><td>Yes — Camp_ID is PK</td><td>✓ BCNF</td></tr>
+      </tbody>
+    </table>
+    <p>
+      The event's name and level are <em>not</em> stored in Relief_Camp — they are looked up via
+      the foreign key. Storing them here would create a transitive dependency
+      (<code>Camp_ID → Event_ID → Event.Name</code>), which would violate 3NF. We avoided this
+      by keeping camp and event data in separate tables.
+    </p>
+
+    <h3>5. Dispatch_Log</h3>
+    <table>
+      <thead><tr><th>Functional Dependency</th><th>Left side is superkey?</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td><code>Dispatch_ID → Req_ID, W_ID, Dispatch_Time, Estimated_Arrival, Status</code></td><td>Yes — Dispatch_ID is PK</td><td>✓ BCNF</td></tr>
+        <tr><td><code>Req_ID → Dispatch_ID, W_ID, ...</code></td><td>Yes — Req_ID is a candidate key (UNIQUE constraint)</td><td>✓ BCNF</td></tr>
+      </tbody>
+    </table>
+    <p>
+      The UNIQUE constraint on <code>Req_ID</code> enforces the business rule that one request
+      produces exactly one dispatch. Delivery details are separated into <code>Delivery_Status</code>
+      to avoid mixing dispatch-time data (ETA, warehouse) with receipt-time data (actual arrival,
+      receiver name). This separation keeps each table at one level of abstraction.
+    </p>
+
+    <h3>Summary</h3>
+    <table>
+      <thead><tr><th>Normal Form</th><th>Requirement</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1NF</strong></td><td>All columns are atomic (no repeating groups or arrays). ENUM columns store a single value from a defined domain.</td><td style="color:var(--green);font-weight:600">✓ Satisfied</td></tr>
+        <tr><td><strong>2NF</strong></td><td>No partial dependencies — every non-key attribute depends on the <em>whole</em> primary key. All composite-key tables (Warehouse_Inventory, Request_Details) have attributes that describe the full key combination.</td><td style="color:var(--green);font-weight:600">✓ Satisfied</td></tr>
+        <tr><td><strong>3NF</strong></td><td>No transitive dependencies — non-key attributes do not depend on other non-key attributes. Event data is not repeated inside Relief_Camp; Resource data is not repeated inside Warehouse_Inventory.</td><td style="color:var(--green);font-weight:600">✓ Satisfied</td></tr>
+        <tr><td><strong>BCNF</strong></td><td>For every functional dependency X → Y, X is a superkey. All tables have been verified above. No anomalies remain.</td><td style="color:var(--green);font-weight:600">✓ Satisfied</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════════════════════════ §15 INDEXES ═══════════════════════════════ -->
+  <div class="section">
+    <div class="section-label">§ 15</div>
+    <h2>Performance Indexes</h2>
+    <p>
+      Indexes are created on columns that are frequently used in WHERE clauses, JOINs,
+      and ORDER BY operations. Without them, MySQL would do a full table scan for
+      every dashboard query, which becomes slow as data grows.
+    </p>
+    <p>
+      Primary keys and UNIQUE constraints already create implicit indexes. The indexes
+      below are <em>additional</em> ones defined in <code>02_indexes.sql</code>.
+    </p>
+
+    <table>
+      <thead><tr><th>Index Name</th><th>Table</th><th>Column(s)</th><th>Why it exists</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>idx_request_status</code></td>
+          <td>Request</td>
+          <td>Status</td>
+          <td>Every dashboard query filters requests by status (Pending, Approved, etc.). Without this index, MySQL scans the entire Request table for each tab click.</td>
+        </tr>
+        <tr>
+          <td><code>idx_request_priority</code></td>
+          <td>Request</td>
+          <td>Priority</td>
+          <td>The admin dashboard sorts and filters by priority. Warehouse managers also prioritize dispatch by urgency.</td>
+        </tr>
+        <tr>
+          <td><code>idx_request_camp</code></td>
+          <td>Request</td>
+          <td>Camp_ID</td>
+          <td>The camp officer's dashboard filters all requests by their Camp_ID. This is used on every page load of the camp dashboard.</td>
+        </tr>
+        <tr>
+          <td><code>idx_request_time</code></td>
+          <td>Request</td>
+          <td>Request_Time</td>
+          <td>Camp stats query counts deliveries in the last 7 days using a <code>WHERE Request_Time &gt; NOW() - INTERVAL 7 DAY</code> clause.</td>
+        </tr>
+        <tr>
+          <td><code>idx_inventory_resource</code></td>
+          <td>Warehouse_Inventory</td>
+          <td>Res_ID</td>
+          <td><code>fn_Total_Stock</code> and <code>sp_Approve_Request</code> query inventory filtered by Res_ID across all warehouses. Called on every approval.</td>
+        </tr>
+        <tr>
+          <td><code>idx_inventory_warehouse</code></td>
+          <td>Warehouse_Inventory</td>
+          <td>W_ID</td>
+          <td><code>fn_Check_Stock</code> and <code>sp_Dispatch_Request</code> query inventory filtered by W_ID. Called on every dispatch.</td>
+        </tr>
+        <tr>
+          <td><code>idx_dispatch_status</code></td>
+          <td>Dispatch_Log</td>
+          <td>Status</td>
+          <td>The admin overview counts in-transit dispatches. Warehouse dashboard filters dispatches by status.</td>
+        </tr>
+        <tr>
+          <td><code>idx_dispatch_time</code></td>
+          <td>Dispatch_Log</td>
+          <td>Dispatch_Time</td>
+          <td>Dispatch history is displayed in chronological order. Without this index, sorting requires a full table scan.</td>
+        </tr>
+        <tr>
+          <td><code>idx_event_level</code></td>
+          <td>Disaster_Event</td>
+          <td>Level</td>
+          <td>Admin stats query counts high/critical events. The events list is filtered and colored by level.</td>
+        </tr>
+        <tr>
+          <td><code>idx_event_status</code></td>
+          <td>Disaster_Event</td>
+          <td>Status</td>
+          <td>Login page and admin overview filter events by <code>Status = 'Active'</code> on every load.</td>
+        </tr>
+        <tr>
+          <td><code>idx_stock_alert_open</code></td>
+          <td>Stock_Alert</td>
+          <td>Resolved, W_ID</td>
+          <td>Composite index. The alerts query always filters by <code>Resolved = FALSE</code> AND a specific <code>W_ID</code>. Composite indexes are more efficient than two separate indexes for this AND condition.</td>
+        </tr>
+        <tr>
+          <td><code>idx_audit_table_time</code></td>
+          <td>Audit_Log</td>
+          <td>Table_Name, Changed_At</td>
+          <td>Composite index for audit queries filtered by table name and ordered/filtered by time. Supports the <code>ORDER BY Changed_At DESC LIMIT 20</code> query efficiently.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="box">
+      <strong>Total indexes:</strong> 12 explicit + implicit indexes from 13 PRIMARY KEY constraints + 4 UNIQUE constraints = <strong>29 indexes total</strong> across the database.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ §16 SEED DATA ═════════════════════════════ -->
+  <div class="section">
+    <div class="section-label">§ 16</div>
+    <h2>Seed Data &amp; Demo Dataset</h2>
+    <p>
+      <code>08_seed_data.sql</code> populates the database with a realistic demo dataset
+      so all three dashboards show meaningful data on first run. It also calls the stored
+      procedures directly to simulate a complete request lifecycle, which populates the
+      dispatch log, delivery status, and audit log tables.
+    </p>
+
+    <h3>Seeded Records</h3>
+    <table>
+      <thead><tr><th>Table</th><th>Records</th><th>Details</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Control_Center</td>
+          <td>3</td>
+          <td>National HQ (New Delhi), Regional HQ West (Mumbai), Regional HQ East (Kolkata)</td>
+        </tr>
+        <tr>
+          <td>Disaster_Event</td>
+          <td>3</td>
+          <td>Cyclone Amphan (Critical, Active), Kerala Floods (High, Active), Bihar Heatwave (Medium, Monitoring)</td>
+        </tr>
+        <tr>
+          <td>Resource</td>
+          <td>8</td>
+          <td>Drinking Water (L), Rice Bag (Units), Paracetamol (Boxes), Tarpaulin Sheet (Units), First Aid Kit (Units), Blankets (Units), Dry Biscuits (Packets), Solar Lamp (Units)</td>
+        </tr>
+        <tr>
+          <td>Warehouse</td>
+          <td>3</td>
+          <td>Central Hub Kolkata (5000 m³), South Hub Kochi (3000 m³), West Hub Surat (4000 m³)</td>
+        </tr>
+        <tr>
+          <td>Relief_Camp</td>
+          <td>3</td>
+          <td>Canning High School (120/500), Digha Shelter (450/1000), St. Marys Camp (80/200)</td>
+        </tr>
+        <tr>
+          <td>Warehouse_Inventory</td>
+          <td>8</td>
+          <td>Initial stock levels across 3 warehouses. E.g. Warehouse 1: 10,000L water, 500 rice bags, 200 tarpaulins.</td>
+        </tr>
+        <tr>
+          <td>Request</td>
+          <td>3</td>
+          <td>One Urgent, one High, one Medium priority request in Pending status</td>
+        </tr>
+        <tr>
+          <td>Request_Details</td>
+          <td>5</td>
+          <td>Line items for the 3 requests (e.g. REQ-1: 500L water + 20 rice bags)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Procedure Calls in Seed File</h3>
+    <p>
+      After inserting the raw data, the seed file calls stored procedures to simulate a
+      complete workflow for Request #1, demonstrating end-to-end functionality with real
+      data in all tables:
+    </p>
+    <pre><span class="cmt">-- Simulate approval of Request #1</span>
+<span class="kw">CALL</span> <span class="fn">sp_Approve_Request</span>(<span class="num">1</span>);
+<span class="cmt">-- Result: Request #1 → Status: Approved, Approved_Qty set, Audit_Log updated</span>
+
+<span class="cmt">-- Simulate dispatch from Warehouse #1</span>
+<span class="kw">CALL</span> <span class="fn">sp_Dispatch_Request</span>(<span class="num">1</span>, <span class="num">1</span>);
+<span class="cmt">-- Result: Inventory deducted, Dispatch_Log row created, Status → Dispatched</span>
+
+<span class="cmt">-- Simulate delivery confirmation</span>
+<span class="kw">CALL</span> <span class="fn">sp_Confirm_Delivery</span>(<span class="num">1</span>, <span class="str">'Officer Suresh'</span>);
+<span class="cmt">-- Result: Delivery_Status row created, Status → Delivered</span>
+
+<span class="cmt">-- Restock Warehouse #2 (also resolves any open alerts)</span>
+<span class="kw">CALL</span> <span class="fn">sp_Restock</span>(<span class="num">2</span>, <span class="num">1</span>, <span class="num">2000</span>, <span class="str">'AquaPure Ltd'</span>);
+<span class="cmt">-- Result: Inventory +2000L water, Restock_Log entry added</span></pre>
+
+    <p>
+      This means after running the seed file, the system already contains one fully
+      completed request, two pending ones, a restock history entry, and several audit log
+      records — giving a realistic picture of an active system.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════ §17 TEST CASES ════════════════════════════ -->
+  <div class="section">
+    <div class="section-label">§ 17</div>
+    <h2>Test Cases &amp; Validation</h2>
+    <p>
+      The following test cases are defined in <code>09_test_cases.sql</code>. They verify
+      that constraints, triggers, procedures, and views all behave correctly. Each test
+      has an expected result — a test passes if MySQL produces exactly that result and no
+      unexpected side effects occur.
+    </p>
+
+    <h3>Test 1 — Negative Inventory Prevention (CHECK constraint)</h3>
+    <div class="box">
+      <strong>Command:</strong> <code>UPDATE Warehouse_Inventory SET Quantity = -50 WHERE Inv_ID = 1;</code><br>
+      <strong>Expected:</strong> MySQL error 3819 — CHECK constraint <code>chk_quantity_positive</code> violated.<br>
+      <strong>What it proves:</strong> Inventory can never go negative, even if the application layer sends a bad update.
+    </div>
+
+    <h3>Test 2 — Stock Alert Trigger Verification</h3>
+    <pre><span class="cmt">-- Lower stock below the threshold</span>
+<span class="kw">UPDATE</span> Warehouse_Inventory <span class="kw">SET</span> Quantity = <span class="num">5</span>
+  <span class="kw">WHERE</span> Res_ID = <span class="num">2</span> <span class="kw">AND</span> W_ID = <span class="num">1</span>;
+
+<span class="cmt">-- Verify the alert was auto-created</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> Stock_Alert <span class="kw">WHERE</span> Resolved = <span class="kw">FALSE</span>;</pre>
+    <div class="box">
+      <strong>Expected:</strong> A new row appears in <code>Stock_Alert</code> with <code>W_ID=1, Res_ID=2, Resolved=0</code>.<br>
+      <strong>What it proves:</strong> <code>trg_after_inventory_update</code> fires automatically when stock crosses the threshold — no application code needed.
+    </div>
+
+    <h3>Test 3 — Procedure Failure: Insufficient Stock</h3>
+    <pre><span class="cmt">-- Create a request for 100,000 units — far more than available</span>
+<span class="kw">INSERT INTO</span> Request (CC_ID, Camp_ID, Status)
+  <span class="kw">VALUES</span> (<span class="num">1</span>, <span class="num">1</span>, <span class="str">'Pending'</span>);
+<span class="kw">INSERT INTO</span> Request_Details (Req_ID, Res_ID, Requested_Qty)
+  <span class="kw">VALUES</span> (LAST_INSERT_ID(), <span class="num">1</span>, <span class="num">100000</span>);
+<span class="kw">CALL</span> <span class="fn">sp_Approve_Request</span>(LAST_INSERT_ID());</pre>
+    <div class="box">
+      <strong>Expected:</strong> SQLSTATE 45000 — <em>"Insufficient total stock to approve this request."</em> The procedure rolls back; <code>Request.Status</code> remains <code>'Pending'</code>.<br>
+      <strong>What it proves:</strong> The procedure correctly guards against approving requests the system cannot fulfil. The transaction is fully atomic — no partial updates leak through.
+    </div>
+
+    <h3>Test 4 — View Correctness: vw_Current_Inventory</h3>
+    <pre><span class="kw">SELECT</span> * <span class="kw">FROM</span> vw_Current_Inventory
+  <span class="kw">WHERE</span> Stock_Status != <span class="str">'OK'</span>;</pre>
+    <div class="box">
+      <strong>Expected:</strong> Returns only rows where <code>Quantity &lt; Min_Threshold</code> with status <code>'LOW STOCK'</code> or <code>'OUT OF STOCK'</code>.<br>
+      <strong>What it proves:</strong> The CASE expression in the view correctly computes stock status from live inventory data.
+    </div>
+
+    <h3>Test 5 — Audit Log Auto-Population</h3>
+    <pre><span class="kw">SELECT</span> * <span class="kw">FROM</span> Audit_Log
+  <span class="kw">ORDER BY</span> Changed_At <span class="kw">DESC LIMIT</span> <span class="num">5</span>;</pre>
+    <div class="box">
+      <strong>Expected:</strong> Returns 5 rows showing every recent status change on the <code>Request</code> table. Each row includes old status, new status, the MySQL user, and timestamp.<br>
+      <strong>What it proves:</strong> <code>trg_after_request_status_update</code> fires automatically on every status change — the audit trail is complete and tamper-proof.
+    </div>
+
+    <h3>Test 6 — Multi-Table JOIN Query (Manual Report)</h3>
+    <p>This is a reporting query that demonstrates multi-table JOIN capability across 6 tables:</p>
+    <pre><span class="kw">SELECT</span>
+    e.Name          <span class="kw">AS</span> Event,
+    c.Name          <span class="kw">AS</span> Destination_Camp,
+    r.Name          <span class="kw">AS</span> Resource,
+    rd.Approved_Qty,
+    d.Dispatch_Time,
+    d.Status        <span class="kw">AS</span> Dispatch_Status
+<span class="kw">FROM</span>   Disaster_Event e
+<span class="kw">JOIN</span>   Relief_Camp     c   <span class="kw">ON</span> e.Event_ID  = c.Event_ID
+<span class="kw">JOIN</span>   Request         req <span class="kw">ON</span> c.Camp_ID   = req.Camp_ID
+<span class="kw">JOIN</span>   Request_Details rd  <span class="kw">ON</span> req.Req_ID  = rd.Req_ID
+<span class="kw">JOIN</span>   Resource        r   <span class="kw">ON</span> rd.Res_ID   = r.Res_ID
+<span class="kw">JOIN</span>   Dispatch_Log    d   <span class="kw">ON</span> req.Req_ID  = d.Req_ID
+<span class="kw">WHERE</span>  e.Name = <span class="str">'Cyclone Amphan'</span> <span class="kw">AND</span> d.Status = <span class="str">'Packed'</span>;</pre>
+    <div class="box">
+      <strong>Expected:</strong> Shows all resources currently packed for dispatch to camps affected by Cyclone Amphan.<br>
+      <strong>What it proves:</strong> The foreign key chain (Event → Camp → Request → RequestDetails → Resource → DispatchLog) is correctly set up and produces meaningful joined output.
+    </div>
+
+    <h3>Test 7 — Workflow Guard: Cannot Add Items to Approved Request</h3>
+    <pre><span class="cmt">-- After sp_Approve_Request(1) has been called, try to add a new item</span>
+<span class="kw">INSERT INTO</span> Request_Details (Req_ID, Res_ID, Requested_Qty)
+  <span class="kw">VALUES</span> (<span class="num">1</span>, <span class="num">3</span>, <span class="num">50</span>);</pre>
+    <div class="box">
+      <strong>Expected:</strong> SQLSTATE 45000 — <em>"Cannot add items to a request that is not Pending."</em> The trigger <code>trg_before_request_details_insert</code> blocks the insert.<br>
+      <strong>What it proves:</strong> Once a request is approved, its line items are frozen. A camp officer cannot inflate a request after approval.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ §18 CONCLUSION ════════════════════════════ -->
+  <div class="section">
+    <div class="section-label">§ 18</div>
+    <h2>Conclusion</h2>
+    <p>
+      DRAS demonstrates that a properly designed relational database can enforce complex
+      real-world workflows entirely through its own constraints, without relying on the
+      application layer for correctness.
+    </p>
+
+    <h3>What the database guarantees on its own</h3>
+    <table>
+      <thead><tr><th>Guarantee</th><th>Mechanism</th></tr></thead>
+      <tbody>
+        <tr><td>Inventory never goes negative</td><td>CHECK constraint on <code>Warehouse_Inventory.Quantity</code></td></tr>
+        <tr><td>Approved quantity never exceeds requested quantity</td><td>CHECK constraint on <code>Request_Details.Approved_Qty</code></td></tr>
+        <tr><td>One dispatch per request</td><td>UNIQUE constraint on <code>Dispatch_Log.Req_ID</code></td></tr>
+        <tr><td>One delivery record per dispatch</td><td>UNIQUE constraint on <code>Delivery_Status.Dispatch_ID</code></td></tr>
+        <tr><td>No items added to non-pending requests</td><td>BEFORE INSERT trigger on <code>Request_Details</code></td></tr>
+        <tr><td>Stock alert fires automatically on low stock</td><td>AFTER UPDATE trigger on <code>Warehouse_Inventory</code></td></tr>
+        <tr><td>Alert resolves automatically on restock</td><td>AFTER UPDATE trigger on <code>Warehouse_Inventory</code></td></tr>
+        <tr><td>Every status change is logged permanently</td><td>AFTER UPDATE trigger on <code>Request</code></td></tr>
+        <tr><td>Two simultaneous approvals cannot both succeed on the same stock</td><td>SELECT … FOR UPDATE row-level lock in <code>sp_Approve_Request</code></td></tr>
+        <tr><td>Camp officers cannot self-approve or modify inventory</td><td>MySQL RBAC — GRANT / REVOKE on application users</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Design decisions and trade-offs</h3>
+    <ul>
+      <li>
+        <strong>Procedure-only mutations:</strong> The choice to route all state changes through stored procedures (rather than direct application SQL) means every mutation gets consistent trigger coverage, audit logging, and transactional safety — at the cost of slightly more complexity in the database layer.
+      </li>
+      <li>
+        <strong>Global stock check at approval, warehouse check at dispatch:</strong> <code>sp_Approve_Request</code> checks total stock across all warehouses so approval is not blocked by distribution issues. <code>sp_Dispatch_Request</code> then checks the specific warehouse, which is a more precise constraint. This two-stage check reflects real-world logistics.
+      </li>
+      <li>
+        <strong>Separate Delivery_Status table:</strong> Delivery confirmation data (who received it, actual arrival time, condition) is kept in its own table rather than adding columns to <code>Dispatch_Log</code>. This keeps dispatch-time data and receipt-time data cleanly separated and avoids NULLs in the dispatch table for unconfirmed deliveries.
+      </li>
+      <li>
+        <strong>Audit_Log has no foreign keys:</strong> This is intentional. If audit records were linked to <code>Request</code> rows via foreign keys, deleting a request would cascade to the audit log and destroy the history. The log must be append-only and independent.
+      </li>
+    </ul>
+
+    <h3>Project statistics</h3>
+    <table>
+      <thead><tr><th>Component</th><th>Count</th></tr></thead>
+      <tbody>
+        <tr><td>Database tables</td><td>13</td></tr>
+        <tr><td>Stored procedures</td><td>4 (sp_Approve_Request, sp_Dispatch_Request, sp_Confirm_Delivery, sp_Restock)</td></tr>
+        <tr><td>Triggers</td><td>4 (stock alert, alert resolve, workflow guard, audit log)</td></tr>
+        <tr><td>SQL views</td><td>6</td></tr>
+        <tr><td>SQL functions</td><td>3 (fn_Check_Stock, fn_Total_Stock, fn_Calculate_ETA)</td></tr>
+        <tr><td>Indexes (explicit)</td><td>12 (plus implicit indexes from PKs and UNIQUEs)</td></tr>
+        <tr><td>MySQL application users</td><td>3 (cc_admin, camp_officer, warehouse_mgr)</td></tr>
+        <tr><td>API endpoints</td><td>19</td></tr>
+        <tr><td>Frontend screens</td><td>5 (Landing, Login, Admin, Camp, Warehouse)</td></tr>
+        <tr><td>SQL source files</td><td>9 (DDL → Indexes → Functions → Procedures → Triggers → Views → Security → Seed → Tests)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr />
+  <div style="text-align:center; color:var(--ink4); font-size:12px; padding: 20px 0; font-family:'JetBrains Mono',monospace;">
+    DRAS · Disaster Resource Allocation System · B.Tech CS Sem 4 · DBMS Mini-Project · Spring 2026
+  </div>
+
+</div><!-- /doc -->
+</body>
+</html>
