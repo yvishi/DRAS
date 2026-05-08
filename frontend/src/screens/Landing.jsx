@@ -13,6 +13,10 @@ export default function Landing({ onNavigate }) {
           </span>
         </div>
         <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+          <button className="btn" onClick={() => onNavigate('queryconsole')}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
+            <Icon name="search" size={12} /> Query Console
+          </button>
           <button className="btn btn-primary" onClick={() => onNavigate('login')}>
             Sign in
           </button>
@@ -38,6 +42,10 @@ export default function Landing({ onNavigate }) {
             <div style={{ display: 'flex', gap: 8 }}>
               <button className="btn btn-primary" onClick={() => onNavigate('login')}>
                 Open dashboard <Icon name="arrow" size={12} />
+              </button>
+              <button className="btn" onClick={() => onNavigate('queryconsole')}
+                style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Icon name="search" size={12} /> Query Console
               </button>
             </div>
             <div style={{ display: 'flex', gap: 32, marginTop: 32, paddingTop: 20, borderTop: '1px solid var(--border)' }}>

@@ -5,6 +5,7 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2/promise');
+const QUERIES = require('./queries');
 
 const app = express();
 app.use(cors({ origin: 'http://localhost:5173' }));
@@ -381,6 +382,36 @@ app.get('/api/restock-log', async (req, res) => {
     sql += ' ORDER BY rl.Restock_Date DESC LIMIT 20';
     const [rows] = await pool.query(sql, params);
     res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── Query Console ─────────────────────────────────────────────────────────
+// Returns the full query catalog (metadata only, no execution).
+app.get('/api/query-console/catalog', (req, res) => {
+  res.json(QUERIES);
+});
+
+// Runs a predefined read-only query by ID and returns rows + metadata.
+app.get('/api/query-console/run/:id', async (req, res) => {
+  const entry = QUERIES.find(q => q.id === req.params.id);
+  if (!entry) return res.status(404).json({ error: 'Query not found' });
+
+  if (entry.type === 'PROCEDURE') {
+    return res.json({
+      columns: [],
+      rows: [],
+      executionTime: 0,
+      note: 'Stored procedures modify data and cannot be executed from the query console.',
+    });
+  }
+
+  const start = Date.now();
+  try {
+    const [rows] = await pool.query(entry.sql);
+    const columns = rows.length > 0 ? Object.keys(rows[0]) : [];
+    res.json({ columns, rows, executionTime: Date.now() - start });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

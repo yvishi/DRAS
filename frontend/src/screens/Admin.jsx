@@ -24,7 +24,8 @@ const NAV = [
     { key: 'dispatches', icon: 'truck',     label: 'Dispatches' },
   ]},
   { label: 'Admin', items: [
-    { key: 'audit',      icon: 'log',       label: 'Audit Log' },
+    { key: 'audit',        icon: 'log',     label: 'Audit Log' },
+    { key: 'queryconsole', icon: 'search',  label: 'Query Console' },
   ]},
 ];
 
@@ -163,7 +164,10 @@ export default function Admin({ onLogout }) {
     <div className="dras-app" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <TopBar role="admin" crumbs={['DRAS', 'Operations', PAGE_TITLES[activeNav] || activeNav]} onLogout={onLogout} />
       <div className="shell">
-        <Sidebar items={NAV} activeKey={activeNav} onSelect={setActiveNav} />
+        <Sidebar items={NAV} activeKey={activeNav} onSelect={(k) => {
+          if (k === 'queryconsole') { onNavigate('queryconsole'); return; }
+          setActiveNav(k);
+        }} />
         <div className="main">
 
           <div className="page-header">
