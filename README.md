@@ -1,44 +1,69 @@
 # DRAS — Disaster Resource Allocation System
 
+> B.Tech CS · Semester 4 · DBMS Mini-Project · 2026
+
 A coordinated supply-chain platform for disaster relief. DRAS connects control centers, relief camps, and warehouses through a single requesting, approval, and dispatch pipeline — built on MySQL 8 with full ACID guarantees, role-based access control, and a stored-procedure-only mutation surface.
 
 ---
 
-## What it does
+## Purpose
 
-When a disaster event is active, relief camps can raise resource requests (water, food, medicine, etc.). A control center admin reviews and approves them. The warehouse manager dispatches the approved goods. The camp officer confirms receipt. Every state change routes through a stored procedure so triggers and the audit log always fire correctly.
+During a disaster event, relief operations fail not because resources are unavailable — but because there is no coordinated system to track *what is where*, *who asked for what*, and *whether it arrived*. DRAS solves this by providing:
 
-### Request lifecycle
+- A **structured request pipeline**: Camp Officer raises → Control Admin approves → Warehouse dispatches → Camp confirms
+- A **live inventory layer**: every dispatch deducts stock; every restock replenishes it; triggers fire alerts the moment stock drops below threshold
+- A **complete audit trail**: every state change is immutably logged with old/new values and the actor's identity
+- A **query console**: a standalone browser page (no login needed) to inspect and run all 37 SQL queries used in the system — useful for demonstrations and database reviews
+
+---
+
+## Request lifecycle
 
 ```
 Camp Officer  →  raises Request
-Control Admin →  sp_Approve_Request  (locks stock, validates availability)
-Warehouse Mgr →  sp_Dispatch_Request (deducts inventory, creates dispatch log)
-Camp Officer  →  sp_Confirm_Delivery (records arrival, closes request)
+                    ↓
+Control Admin →  sp_Approve_Request
+                 • locks row with SELECT … FOR UPDATE
+                 • validates system-wide stock via fn_Total_Stock()
+                 • sets Approved_Qty on each line item
+                    ↓
+Warehouse Mgr →  sp_Dispatch_Request
+                 • validates warehouse-level stock via fn_Check_Stock()
+                 • deducts Warehouse_Inventory
+                 • may fire trg_after_inventory_update → Stock_Alert
+                 • inserts Dispatch_Log with fn_Calculate_ETA()
+                    ↓
+Camp Officer  →  sp_Confirm_Delivery
+                 • inserts Delivery_Status (Actual_Arrival = NOW())
+                 • closes the request
+                 • fires trg_after_request_status_update → Audit_Log
 ```
 
-### Key database features
+---
+
+## Key database features
 
 | Feature | Detail |
 |---------|--------|
-| Tables | 13 tables, fully normalized to BCNF |
-| Stored procedures | 4 — all mutations go through procedures |
-| Triggers | Auto-fires `Stock_Alert` when inventory drops below threshold |
-| Views | 6 operational views (`vw_Active_Requests`, `vw_Current_Inventory`, …) |
-| Audit log | Every state change is recorded in `Audit_Log` via trigger |
-| RBAC | 3 MySQL users with least-privilege grants |
-| ACID safety | `sp_Approve_Request` uses `SELECT … FOR UPDATE` to prevent double-spend |
+| **Tables** | 13 tables, normalized to BCNF |
+| **Stored Procedures** | 4 — `sp_Approve_Request`, `sp_Dispatch_Request`, `sp_Confirm_Delivery`, `sp_Restock` |
+| **SQL Functions** | 3 — `fn_Check_Stock`, `fn_Total_Stock`, `fn_Calculate_ETA` |
+| **Triggers** | `trg_after_inventory_update` auto-fires `Stock_Alert`; `trg_after_request_status_update` writes `Audit_Log` |
+| **Views** | 6 — `vw_Current_Inventory`, `vw_Active_Requests`, `vw_Warehouse_Utilization`, `vw_Delivery_Performance`, `vw_Crisis_Demand` |
+| **Audit Log** | Every state change recorded with actor, table, old/new values (JSON), timestamp |
+| **RBAC** | 3 MySQL users (`cc_admin`, `camp_officer`, `warehouse_mgr`) with least-privilege grants |
+| **ACID safety** | `sp_Approve_Request` uses `SELECT … FOR UPDATE` inside a transaction to prevent double-spend |
 
 ---
 
 ## Tech stack
 
-| Layer | Technology |
-|-------|-----------|
-| Database | MySQL 8.0+ |
-| Backend | Node.js + Express 4 |
-| Frontend | React 18 + Vite 5 |
-| API | REST JSON, proxied through Vite dev server |
+| Layer | Technology | Version |
+|-------|-----------|---------|
+| Database | MySQL | 8.0+ |
+| Backend | Node.js + Express | Express 4.18, mysql2 3.6 |
+| Frontend | React + Vite | React 18, Vite 5 |
+| API | REST / JSON | 22 endpoints, proxied through Vite |
 
 ---
 
@@ -47,24 +72,37 @@ Camp Officer  →  sp_Confirm_Delivery (records arrival, closes request)
 ```
 DRAS/
 ├── sql/
-│   ├── 01_ddl_tables.sql     — all 13 CREATE TABLE statements
-│   ├── 02_indexes.sql        — indexes for query performance
-│   ├── 03_functions.sql      — scalar SQL functions
-│   ├── 04_procedures.sql     — 4 stored procedures
-│   ├── 05_triggers.sql       — audit + stock-alert triggers
-│   ├── 06_views.sql          — 6 operational views
-│   ├── 07_security.sql       — MySQL users & GRANT statements
-│   ├── 08_seed_data.sql      — demo dataset
+│   ├── 01_ddl_tables.sql     — 13 CREATE TABLE statements with FKs, checks, UNIQUE constraints
+│   ├── 02_indexes.sql        — performance indexes on status, priority, time columns
+│   ├── 03_functions.sql      — fn_Check_Stock, fn_Total_Stock, fn_Calculate_ETA
+│   ├── 04_procedures.sql     — sp_Approve_Request, sp_Dispatch_Request, sp_Confirm_Delivery, sp_Restock
+│   ├── 05_triggers.sql       — stock-alert trigger, audit-log trigger, request guard trigger
+│   ├── 06_views.sql          — 6 reporting views
+│   ├── 07_security.sql       — MySQL user creation and GRANT statements
+│   ├── 08_seed_data.sql      — demo events, camps, warehouses, inventory, requests
 │   └── 09_test_cases.sql     — manual test queries
+│
 ├── backend/
-│   ├── server.js             — Express app + all /api routes
+│   ├── server.js             — Express app with all /api routes
+│   ├── queries.js            — catalog of 37 classified queries (used by Query Console)
 │   └── package.json
+│
 └── frontend/
     ├── src/
-    │   ├── App.jsx            — client-side router (sessionStorage-based)
-    │   ├── api.js             — fetch helpers for every endpoint
-    │   ├── screens/           — Landing, Login, Admin, Camp, Warehouse
-    │   └── components/        — TopBar, Sidebar, Icon, shared utilities
+    │   ├── App.jsx            — client-side router (sessionStorage-based, no library)
+    │   ├── api.js             — typed fetch helpers for every endpoint
+    │   ├── screens/
+    │   │   ├── Landing.jsx    — project homepage with feature overview
+    │   │   ├── Login.jsx      — demo role selector
+    │   │   ├── Admin.jsx      — control center dashboard
+    │   │   ├── Camp.jsx       — camp officer dashboard
+    │   │   ├── Warehouse.jsx  — warehouse manager dashboard
+    │   │   └── QueryConsole.jsx — standalone SQL query browser
+    │   └── components/
+    │       ├── TopBar.jsx
+    │       ├── Sidebar.jsx
+    │       ├── Icon.jsx
+    │       └── shared.jsx     — StatusBadge, PriorityCell, Spinner, time helpers
     ├── vite.config.js         — proxies /api → localhost:3001
     └── package.json
 ```
@@ -73,59 +111,53 @@ DRAS/
 
 ## Prerequisites
 
-- **MySQL 8.0+** installed and running
-- **Node.js 18+** (comes with npm)
-- A terminal / command prompt
+- **XAMPP** (or any MySQL 8.0+ installation) running on port 3306
+- **Node.js 18+** with npm
+- A browser (Chrome / Firefox / Edge)
 
 ---
 
 ## Setup & run
 
-### Step 1 — Clone or download the project
+### Step 1 — Database setup
 
-```bash
-git clone <repo-url>
-cd DRAS
-```
-
-### Step 2 — Set up the database
-
-Open a MySQL session as root (or any user with CREATE privileges):
+Start MySQL (e.g. via XAMPP Control Panel → Start MySQL). Open a MySQL session:
 
 ```bash
 mysql -u root -p
 ```
 
-Then run each SQL file in order:
+Run each SQL file in order (replace the path with the absolute path on your machine):
 
 ```sql
-SOURCE /path/to/DRAS/sql/01_ddl_tables.sql;
-SOURCE /path/to/DRAS/sql/02_indexes.sql;
-SOURCE /path/to/DRAS/sql/03_functions.sql;
-SOURCE /path/to/DRAS/sql/04_procedures.sql;
-SOURCE /path/to/DRAS/sql/05_triggers.sql;
-SOURCE /path/to/DRAS/sql/06_views.sql;
-SOURCE /path/to/DRAS/sql/07_security.sql;
-SOURCE /path/to/DRAS/sql/08_seed_data.sql;
+SOURCE C:/path/to/DRAS/sql/01_ddl_tables.sql;
+SOURCE C:/path/to/DRAS/sql/02_indexes.sql;
+SOURCE C:/path/to/DRAS/sql/03_functions.sql;
+SOURCE C:/path/to/DRAS/sql/04_procedures.sql;
+SOURCE C:/path/to/DRAS/sql/05_triggers.sql;
+SOURCE C:/path/to/DRAS/sql/06_views.sql;
+SOURCE C:/path/to/DRAS/sql/07_security.sql;
+SOURCE C:/path/to/DRAS/sql/08_seed_data.sql;
 ```
 
-> On Windows use forward slashes or double backslashes in the path.  
-> `07_security.sql` creates the three MySQL application users. Skip it if you only want the schema and data.
+> **Windows tip:** Use forward slashes (`C:/...`) or escaped backslashes (`C:\\...`) inside MySQL's SOURCE command.  
+> `07_security.sql` creates the three application users. Skip it if you only need the schema and seed data.
 
-### Step 3 — Configure the backend
+### Step 2 — Configure the backend password (if needed)
 
-Open `backend/server.js` and find the database connection config near the top. Update it to match your local MySQL credentials:
+Open `backend/server.js`. If your MySQL root has a password, set it on line ~18:
 
 ```js
-const db = mysql.createPool({
+const pool = mysql.createPool({
   host:     'localhost',
-  user:     'root',       // or 'cc_admin' if you ran 07_security.sql
-  password: 'yourpassword',
+  port:     3306,
+  user:     'root',
+  password: 'yourpassword',   // ← change this
   database: 'DRAS',
 });
 ```
 
-### Step 4 — Install dependencies
+### Step 3 — Install dependencies
 
 ```bash
 # Backend
@@ -137,102 +169,184 @@ cd frontend
 npm install
 ```
 
-### Step 5 — Start both servers
+### Step 4 — Start both servers
 
-**Terminal 1 — backend** (runs on port 3001):
-
+**Terminal 1 — backend** (port 3001):
 ```bash
 cd backend
-npm run dev
+node server.js
 ```
 
-**Terminal 2 — frontend** (runs on port 5173):
-
+**Terminal 2 — frontend** (port 5173):
 ```bash
 cd frontend
 npm run dev
 ```
 
-Open your browser at **http://localhost:5173**
+### Step 5 — Open in browser
+
+| URL | What you get |
+|-----|-------------|
+| `http://localhost:5173` | Main application (login required) |
+| `http://localhost:5173` → Query Console button | SQL query browser (no login needed) |
 
 ---
 
 ## Login credentials
 
-The frontend uses demo credentials. The password hint is always shown on the login page.
+Credentials are shown as hints on the login page. No real authentication is used — this is a demo system.
 
-| Role | User ID | Password | Access |
-|------|---------|----------|--------|
-| Control Admin | `admin` | `admin123` | Full dashboard — approve requests, view all data |
-| Camp Officer | `camp` | `camp123` | Raise requests, track incoming, confirm delivery |
-| Warehouse Mgr | `warehouse` | `wh123` | Manage inventory, dispatch requests, restock |
+| Role | Username | Password | Access |
+|------|----------|----------|--------|
+| Control Admin | `admin` | `admin123` | Full dashboard — approve requests, view all data, audit log |
+| Camp Officer | `camp` | `camp123` | Raise requests, track deliveries, confirm receipt |
+| Warehouse Manager | `warehouse` | `wh123` | Manage inventory, dispatch requests, restock |
 
-> These are frontend-only demo credentials. The actual MySQL application users created by `07_security.sql` are `cc_admin / cc_pass123`, `camp_officer / camp_pass123`, and `warehouse_mgr / wh_pass123`.
+> The MySQL application users created by `07_security.sql` are: `cc_admin / cc_pass123`, `camp_officer / camp_pass123`, `warehouse_mgr / wh_pass123`. These enforce row-level access restrictions independent of the frontend.
 
 ---
 
-## Features by role
+## Features
 
-### Control Admin
-- **Overview** — live stats (active events, pending requests, in-transit dispatches, open stock alerts)
-- **Disaster Events** — full table of all events with level, status, and camp count
-- **Requests** — tabbed view (Pending / Approved / In transit / Delivered) with one-click Approve and lifecycle detail modal
-- **Warehouses** — list of all registered warehouses and capacities
-- **Inventory** — full cross-warehouse stock view with status badges
-- **Dispatches** — complete dispatch log
-- **Audit Log** — every state change recorded with actor, table, old/new values, timestamp
+### Query Console
 
-### Camp Officer
-- **Overview** — camp details (name, linked event, occupancy, capacity) and request breakdown by status
-- **My Requests** — full request list with ETA and one-click Confirm for dispatched items
-- **New Request** — form to raise a request: choose priority (Low / Medium / High / Urgent), add line items (resource + quantity), submit
-- **Incoming** — dispatch table for this camp's requests with Confirm button
+A built-in SQL browser accessible without logging in. Click **Query Console** on the home page or in the Admin sidebar.
 
-### Warehouse Manager
-- **Inventory** — live stock table with progress bar vs threshold and quick-Restock button
-- **Alerts** — open stock alerts fired by trigger when stock crosses minimum threshold
-- **Approved queue** — approved requests waiting to be dispatched; one-click Dispatch button
-- **Dispatches** — history of all dispatches from this warehouse
-- **Restock** — form to add stock for any resource (calls `sp_Restock`, resolves open alerts automatically)
-- **Restock log** — history of all restock operations
+- **37 queries** organized into **8 categories**
+- Each query shows: title, description of what it demonstrates, syntax-highlighted SQL
+- Click **Run Query** to execute it live against the database and see results in a table with row count and execution time
+- Stored procedure definitions are shown but not executed (they modify data)
+
+| Category | Queries | Demonstrates |
+|----------|---------|-------------|
+| Views | 5 | Pre-built reporting views, CASE expressions, GROUP BY |
+| Core Data | 6 | Direct SELECTs, correlated subqueries, FIELD() ordering |
+| Filtered Queries | 5 | WHERE, DATE_SUB, TIMESTAMPDIFF |
+| Aggregation & Analytics | 5 | GROUP BY, COUNT/SUM/AVG, ROUND, NULLIF |
+| SQL Functions | 4 | fn_Check_Stock, fn_Total_Stock, fn_Calculate_ETA |
+| Stored Procedures | 4 | Transaction logic, FOR UPDATE, ON DUPLICATE KEY |
+| Joins & Subqueries | 4 | 6-table LEFT JOIN, NOT EXISTS, GROUP_CONCAT |
+| Audit & Logs | 4 | Audit trail, restock log, delivery confirmations |
+
+### Control Admin dashboard
+
+- **Overview** — live stats: active events, pending requests, in-transit dispatches, open stock alerts, high-severity events
+- **Disaster Events** — full event table ordered by severity (Critical → High → Medium → Low) with camp count
+- **Requests** — tabbed view (Pending / Approved / In transit / Delivered) with one-click Approve and full lifecycle detail modal
+- **Warehouses** — all registered warehouses with location and capacity
+- **Inventory** — cross-warehouse stock view with OK / LOW STOCK / OUT OF STOCK badges
+- **Dispatches** — complete dispatch log with resource manifests
+- **Audit Log** — immutable change history: actor, table, old value, new value, timestamp
+
+### Camp Officer dashboard
+
+- **Overview** — camp name, linked disaster event, occupancy vs capacity, request status breakdown
+- **My Requests** — all requests for this camp with current status and ETA
+- **New Request** — form to raise a request: select priority (Low / Medium / High / Urgent), add resource line items, submit
+- **Incoming** — dispatch tracker; Confirm delivery button writes to Delivery_Status via `sp_Confirm_Delivery`
+
+### Warehouse Manager dashboard
+
+- **Inventory** — live stock per resource with progress bar vs minimum threshold; quick Restock button inline
+- **Stock Alerts** — open alerts auto-created by trigger when quantity drops below threshold
+- **Approved Queue** — requests approved and waiting to be dispatched; one-click Dispatch
+- **Dispatch History** — all dispatches from this warehouse with status and resource detail
+- **Restock** — form to add stock (calls `sp_Restock`; auto-resolves related alert if threshold is crossed)
+- **Restock Log** — full replenishment history with supplier info
 
 ---
 
 ## API endpoints
 
-All endpoints are served by Express on `localhost:3001` and proxied through Vite at `/api/…`.
+All endpoints are served by Express on port 3001. The Vite dev server proxies `/api/…` so the frontend can call them with relative URLs.
+
+### Application endpoints
 
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/api/health` | DB connection check |
-| GET | `/api/stats` | Aggregate stats for admin overview |
-| GET | `/api/events` | All disaster events |
-| GET | `/api/requests` | All requests (filter: `?status=`, `?campId=`) |
-| GET | `/api/requests/:id` | Single request with items, dispatch, delivery |
-| POST | `/api/requests` | Create new request + line items |
+| GET | `/api/stats` | Aggregate stats for the admin overview tiles |
+| GET | `/api/events` | All disaster events (ordered by severity) |
+| GET | `/api/requests` | All requests with resource summary (`?status=`, `?campId=`) |
+| GET | `/api/requests/:id` | Single request with line items, dispatch info, delivery status |
+| POST | `/api/requests` | Create new request + line items (transaction) |
 | POST | `/api/requests/:id/approve` | Calls `sp_Approve_Request` |
-| POST | `/api/requests/:id/dispatch` | Calls `sp_Dispatch_Request` |
-| GET | `/api/dispatches` | All dispatches (filter: `?warehouseId=`, `?status=`) |
+| POST | `/api/requests/:id/dispatch` | Calls `sp_Dispatch_Request` (body: `{ warehouseId }`) |
+| GET | `/api/dispatches` | All dispatches (`?warehouseId=`, `?status=`) |
 | POST | `/api/dispatches/:id/confirm` | Calls `sp_Confirm_Delivery` |
-| GET | `/api/inventory` | Inventory (filter: `?warehouseId=`) |
-| GET | `/api/alerts` | Open stock alerts (filter: `?warehouseId=`) |
+| GET | `/api/inventory` | Stock levels (`?warehouseId=` for single warehouse) |
+| GET | `/api/alerts` | Open stock alerts (`?warehouseId=`) |
 | GET | `/api/warehouses` | All warehouses |
-| GET | `/api/warehouses/:id/stats` | Stats for a single warehouse |
+| GET | `/api/warehouses/:id/stats` | SKU count, low-stock count, queue, alerts for one warehouse |
 | GET | `/api/resources` | All resource types |
-| GET | `/api/camps` | All camps with event info |
-| GET | `/api/camps/:id/stats` | Stats for a single camp |
-| POST | `/api/restock` | Calls `sp_Restock` |
-| GET | `/api/restock-log` | Restock history (filter: `?warehouseId=`) |
+| GET | `/api/camps` | All relief camps with event info |
+| GET | `/api/camps/:id/stats` | Active, awaiting, delivered, pending-confirm counts for one camp |
+| POST | `/api/restock` | Calls `sp_Restock` (body: `{ warehouseId, resourceId, qty, supplier }`) |
+| GET | `/api/restock-log` | Restock history (`?warehouseId=`) |
 | GET | `/api/audit` | Last 20 audit log entries |
+
+### Query Console endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/query-console/catalog` | Full catalog of 37 predefined queries (metadata + SQL) |
+| GET | `/api/query-console/run/:id` | Execute a query by ID; returns `{ columns, rows, executionTime }` |
+
+---
+
+## Database schema overview
+
+```
+Control_Center ──┐
+                 ├──► Request ──► Request_Details ──► Resource
+Relief_Camp ─────┘       │                              │
+    │                    ▼                              │
+Disaster_Event      Dispatch_Log ◄──────────────────────┤
+                         │                              │
+                    Delivery_Status              Warehouse_Inventory
+                                                        │
+                                                    Stock_Alert
+                                                    Restock_Log
+                                                    Audit_Log
+```
+
+### Table descriptions
+
+| Table | Purpose |
+|-------|---------|
+| `Disaster_Event` | Active or past disaster events with severity level |
+| `Control_Center` | Regional command nodes that manage requests |
+| `Relief_Camp` | Camps linked to a disaster event |
+| `Warehouse` | Storage facilities with location and capacity |
+| `Resource` | Resource types (Food / Medical / Shelter / Utility) |
+| `Request` | A camp's resource request; tracks lifecycle status |
+| `Request_Details` | Line items per request (resource + qty) |
+| `Warehouse_Inventory` | Current stock per warehouse per resource |
+| `Dispatch_Log` | Shipments from warehouse to camp |
+| `Delivery_Status` | Camp confirmation of a received shipment |
+| `Restock_Log` | Record of every inventory replenishment |
+| `Stock_Alert` | Auto-created when inventory crosses Min_Threshold downward |
+| `Audit_Log` | Immutable log of all state changes (JSON old/new values) |
+
+---
+
+## Role-based access (MySQL RBAC)
+
+Three MySQL users are created by `07_security.sql`, each with the minimum permissions needed:
+
+| User | Permissions |
+|------|------------|
+| `cc_admin` | `ALL PRIVILEGES` on `DRAS.*` |
+| `camp_officer` | SELECT on views, INSERT on Request/Request_Details, EXECUTE on `sp_Confirm_Delivery` |
+| `warehouse_mgr` | SELECT on views, EXECUTE on `sp_Dispatch_Request` and `sp_Restock` |
+
+`camp_officer` and `warehouse_mgr` **cannot** directly `UPDATE Warehouse_Inventory` or `Request.Status`. All mutations go through stored procedures so triggers and the audit log always fire.
 
 ---
 
 ## Notes
 
-- **No real authentication** — credentials are hardcoded in the frontend for demo purposes. In a production system these would be replaced with proper auth tokens.
-- **Seed data** — `08_seed_data.sql` populates the database with sample events, camps, warehouses, resources, and inventory so the dashboards are non-empty on first run.
-- **Stored procedures are mandatory** — `camp_officer` and `warehouse_mgr` MySQL users cannot directly `UPDATE Warehouse_Inventory` or `Request.Status`. Every mutation must go through a procedure so triggers and audit log always fire.
-
----
-
-
+- **No real authentication** — credentials are hardcoded in the frontend for demo purposes. Production would replace this with JWT or session-based auth.
+- **Seed data** — `08_seed_data.sql` inserts sample events, camps, warehouses, resources, and inventory records so all dashboards are populated on first run.
+- **Procedure-only mutations** — the system is designed so no business logic bypasses stored procedures. This guarantees triggers fire on every state change, which keeps the audit log and stock alerts accurate.
+- **Concurrent safety** — `sp_Approve_Request` uses `SELECT … FOR UPDATE` inside a `START TRANSACTION` block. Two simultaneous approvals for the same stock cannot both succeed.
