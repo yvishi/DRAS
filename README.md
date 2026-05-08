@@ -1,6 +1,6 @@
 # DRAS — Disaster Resource Allocation System
 
-A coordinated supply-chain platform for disaster relief, built as a B.Tech CS Semester 4 DBMS mini-project (Spring 2026). DRAS connects control centers, relief camps, and warehouses through a single requesting, approval, and dispatch pipeline — built on MySQL 8 with full ACID guarantees, role-based access control, and a stored-procedure-only mutation surface.
+A coordinated supply-chain platform for disaster relief. DRAS connects control centers, relief camps, and warehouses through a single requesting, approval, and dispatch pipeline — built on MySQL 8 with full ACID guarantees, role-based access control, and a stored-procedure-only mutation surface.
 
 ---
 
@@ -235,4 +235,4 @@ All endpoints are served by Express on `localhost:3001` and proxied through Vite
 
 ---
 
-*B.Tech CS · Semester 4 · DBMS Mini-project · Spring 2026*
+
